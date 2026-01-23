@@ -1,0 +1,319 @@
+// pages/transparency.tsx
+'use client'
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
+import { useRouter } from 'next/router'
+import Image from 'next/image'
+
+interface TransparencyData {
+  totalMembers: number
+  totalContributed: number
+  poolSize: number
+  adminFeeTotal: number
+  ticketsIssued: number
+  activeMembers: number
+}
+
+export default function TransparencyReport() {
+  const [data, setData] = useState<TransparencyData>({
+    totalMembers: 0,
+    totalContributed: 0,
+    poolSize: 0,
+    adminFeeTotal: 0,
+    ticketsIssued: 0,
+    activeMembers: 0,
+  })
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+
+  useEffect(() => {
+    loadTransparencyData()
+  }, [])
+
+  const loadTransparencyData = async () => {
+    try {
+      // Get total members
+      const { count: memberCount } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact' })
+
+      // Get total contributions and pool data
+      const { data: payments } = await supabase
+        .from('payments')
+        .select('amount, status')
+        .eq('status', 'completed')
+
+      const totalContributed = payments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
+      const adminFee = totalContributed * 0.12
+      const poolSize = totalContributed * 0.88
+
+      // Get tickets issued
+      const { count: ticketCount } = await supabase
+        .from('event_members')
+        .select('*', { count: 'exact' })
+        .eq('ticket_issued', true)
+
+      // Get active members (contributed in last 40 days)
+      const fortyDaysAgo = new Date()
+      fortyDaysAgo.setDate(fortyDaysAgo.getDate() - 40)
+
+      const { data: activePayments } = await supabase
+        .from('payments')
+        .select('user_id', { count: 'exact' })
+        .eq('status', 'completed')
+        .gte('created_at', fortyDaysAgo.toISOString())
+
+      const uniqueActiveUsers = new Set(activePayments?.map(p => p.user_id) || [])
+
+      setData({
+        totalMembers: memberCount || 0,
+        totalContributed,
+        poolSize: Math.round(poolSize),
+        adminFeeTotal: Math.round(adminFee),
+        ticketsIssued: ticketCount || 0,
+        activeMembers: uniqueActiveUsers.size,
+      })
+    } catch (err) {
+      console.error('Error loading transparency data:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div style={{ fontFamily: 'Poppins, sans-serif', background: '#FAFAFA', minHeight: '100vh' }}>
+      {/* Header */}
+      <header style={{ background: 'white', borderBottom: '1px solid #E5E7EB', padding: '16px 20px', position: 'sticky', top: 0, zIndex: 40 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Image src="/images/logo.png" alt="GrooveFund" width={120} height={40} style={{ cursor: 'pointer', width: 'auto', height: '32px' }} onClick={() => router.push('/')} />
+          <button onClick={() => router.push('/login')} style={{ padding: '10px 20px', border: 'none', borderRadius: 12, background: 'linear-gradient(135deg, #FF751F 0%, #FF8C42 100%)', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 117, 31, 0.2)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none' }} > Log in </button>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 20px' }}>
+        {/* Hero Section */}
+        <section style={{ textAlign: 'center', marginBottom: '64px' }}>
+          <h1 style={{ fontSize: '48px', fontWeight: 800, color: '#1F2937', margin: '0 0 12px 0', lineHeight: 1.1 }}>
+            📊 Transparency Report
+          </h1>
+          <p style={{ fontSize: '18px', color: '#6B7280', margin: '0 0 32px 0', maxWidth: '600px', margin: '0 auto 32px' }}>
+            Everything you need to know about where your money goes. Real data. Real tickets. Real community.
+          </p>
+          <div style={{ display: 'inline-block', padding: '12px 24px', background: 'linear-gradient(135deg, #FFF5ED 0%, #FFFFFF 100%)', border: '2px solid #FF751F', borderRadius: '12px', fontSize: '14px', fontWeight: 600, color: '#FF751F' }}>
+            ✅ Updated Every Hour
+          </div>
+        </section>
+
+        {/* Key Metrics */}
+        <section style={{ marginBottom: '64px' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: '#1F2937', marginBottom: '32px', textAlign: 'center' }}>Community at a Glance</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+            {[
+              { icon: '👥', title: 'Total Members', value: loading ? '...' : data.totalMembers.toLocaleString(), subtitle: 'Groovers saving together' },
+              { icon: '💰', title: 'Total Contributed', value: loading ? '...' : `R${data.totalContributed.toLocaleString()}`, subtitle: 'Combined savings pool' },
+              { icon: '🏦', title: 'Available Pool', value: loading ? '...' : `R${data.poolSize.toLocaleString()}`, subtitle: 'After 12% admin fee' },
+              { icon: '🎫', title: 'Tickets Issued', value: loading ? '...' : data.ticketsIssued.toLocaleString(), subtitle: 'Real concert tickets' },
+              { icon: '🔥', title: 'Active Members', value: loading ? '...' : data.activeMembers.toLocaleString(), subtitle: 'Last 40 days' },
+              { icon: '💸', title: 'Admin Fee Used', value: loading ? '...' : `R${data.adminFeeTotal.toLocaleString()}`, subtitle: 'Operations & support' },
+            ].map((metric, i) => (
+              <div key={i} style={{ background: 'white', padding: '28px', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)', textAlign: 'center', transition: 'all 0.3s ease', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(255, 117, 31, 0.1)'; e.currentTarget.style.borderColor = '#FF751F' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.05)'; e.currentTarget.style.borderColor = '#E5E7EB' }}>
+                <div style={{ fontSize: '40px', marginBottom: '12px' }}>{metric.icon}</div>
+                <div style={{ fontSize: '14px', color: '#6B7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>{metric.title}</div>
+                <div style={{ fontSize: '32px', fontWeight: 800, background: 'linear-gradient(135deg, #FF751F 0%, #FF8C42 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '8px' }}>{metric.value}</div>
+                <div style={{ fontSize: '13px', color: '#9CA3AF' }}>{metric.subtitle}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* How Your Money Works */}
+        <section style={{ marginBottom: '64px', background: 'white', padding: '48px', borderRadius: '20px', border: '1px solid #E5E7EB' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: '#1F2937', marginBottom: '32px' }}>💰 How Your Money Works</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
+            {[
+              {
+                step: '1️⃣',
+                title: 'You Contribute',
+                desc: 'You send R500/month via EFT or YOCO. It\'s secure, POPIA-compliant, and encrypted.',
+                example: 'Example: 100 members × R500 = R50,000 total'
+              },
+              {
+                step: '2️⃣',
+                title: 'Pool Grows',
+                desc: 'Your money goes into a community pool with thousands of other Groovers. 88% stays in the pool.',
+                example: 'Pool: R50,000 × 0.88 = R44,000 available'
+              },
+              {
+                step: '3️⃣',
+                title: 'Admin Fee (12%)',
+                desc: 'We take 12% to cover payments processing, customer support, event partnerships, and platform maintenance.',
+                example: 'Admin fee: R50,000 × 0.12 = R6,000'
+              },
+              {
+                step: '4️⃣',
+                title: 'Tickets Purchased',
+                desc: 'The available pool buys real concert and festival tickets. Top 40% members get priority access.',
+                example: 'R44,000 buys tickets to major events'
+              },
+              {
+                step: '5️⃣',
+                title: 'You Win Tickets',
+                desc: 'If you\'re in the top 40% by points, you get access to purchase tickets at member prices.',
+                example: '500+ points = qualified for tickets'
+              },
+              {
+                step: '6️⃣',
+                title: 'Points Roll Over',
+                desc: 'Didn\'t win this month? Your points stay. No loss. You compound them for future events.',
+                example: 'Month 1: 500pts, Month 2: 1000pts'
+              },
+            ].map((item, i) => (
+              <div key={i} style={{ paddingBottom: '24px', borderBottom: i < 3 ? '2px solid #E5E7EB' : 'none' }}>
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>{item.step}</div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1F2937', marginBottom: '8px' }}>{item.title}</h3>
+                <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.6', marginBottom: '12px' }}>{item.desc}</p>
+                <div style={{ fontSize: '13px', color: '#FF751F', fontWeight: 600, background: '#FFF5ED', padding: '8px 12px', borderRadius: '8px', display: 'inline-block' }}>
+                  {item.example}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Fee Breakdown */}
+        <section style={{ marginBottom: '64px' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: '#1F2937', marginBottom: '32px', textAlign: 'center' }}>💸 Where Your 12% Admin Fee Goes</h2>
+          <div style={{ background: 'white', padding: '40px', borderRadius: '16px', border: '1px solid #E5E7EB' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
+              {[
+                { percentage: '40%', title: 'Payment Processing', desc: 'EFT & YOCO fees for secure transactions' },
+                { percentage: '25%', title: 'Customer Support', desc: '24/7 help, chat, and member support' },
+                { percentage: '20%', title: 'Event Partnerships', desc: 'Relationships with venues & promoters' },
+                { percentage: '15%', title: 'Platform & Security', desc: 'Servers, encryption, & POPIA compliance' },
+              ].map((fee, i) => (
+                <div key={i} style={{ background: 'linear-gradient(135deg, #FFF5ED 0%, #FFFFFF 100%)', padding: '24px', borderRadius: '12px', border: '1px solid #FFE4CC' }}>
+                  <div style={{ fontSize: '28px', fontWeight: 800, color: '#FF751F', marginBottom: '8px' }}>{fee.percentage}</div>
+                  <div style={{ fontSize: '16px', fontWeight: 700, color: '#1F2937', marginBottom: '4px' }}>{fee.title}</div>
+                  <div style={{ fontSize: '13px', color: '#6B7280' }}>{fee.desc}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: '32px', padding: '24px', background: '#F0F9FF', border: '1px solid #BFDBFE', borderRadius: '12px', textAlign: 'center' }}>
+              <p style={{ fontSize: '14px', color: '#1E40AF', fontWeight: 600, margin: 0 }}>
+                ✅ All fees are disclosed upfront. No hidden charges. No surprises.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Rules Summary */}
+        <section style={{ marginBottom: '64px' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: '#1F2937', marginBottom: '32px', textAlign: 'center' }}>📋 Key Rules Everyone Should Know</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+            {[
+              {
+                icon: '💰',
+                title: 'Contribution',
+                rules: ['R500/month minimum', 'No signup fees', 'Can increase anytime', 'First contribution gets 500 points instantly']
+              },
+              {
+                icon: '🎫',
+                title: 'Winning Tickets',
+                rules: ['Top 40% (500+ pts) get priority', 'More points = better tickets', 'Points roll over monthly', 'No points lost if you don\'t win']
+              },
+              {
+                icon: '🔥',
+                title: 'Streaks & Inactive',
+                rules: ['40+ days inactive = lose 15pts/day', 'One R500 payment resets timer', 'Build streaks for consistency', 'Streaks unlock member rewards']
+              },
+              {
+                icon: '🛡️',
+                title: 'Legal & Safe',
+                rules: ['Operates as traditional stokvel', 'POPIA-compliant payments', 'Full audit trails available', 'Fully transparent & auditable']
+              },
+              {
+                icon: '🎵',
+                title: 'Tickets',
+                rules: ['Real tickets to real events', 'Tickets cost 495 points per slot', '1 slot = R700-R1000 events', '2-3 slots = R1200-R2000 events']
+              },
+              {
+                icon: '💡',
+                title: 'Community',
+                rules: ['5000+ active Groovers', 'Connect with members attending', 'Referral rewards (50 pts)', 'VIP GrooveFund member events']
+              },
+            ].map((section, i) => (
+              <div key={i} style={{ background: 'white', padding: '28px', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }}>
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>{section.icon}</div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1F2937', marginBottom: '16px' }}>{section.title}</h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {section.rules.map((rule, j) => (
+                    <li key={j} style={{ fontSize: '13px', color: '#6B7280', marginBottom: '10px', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                      <span style={{ color: '#FF751F', fontWeight: 700, marginTop: '2px' }}>✓</span>
+                      {rule}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Anti-Scam Section */}
+        <section style={{ marginBottom: '64px', background: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FF 100%)', padding: '48px', borderRadius: '20px', border: '2px solid #BFDBFE' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: '#1E40AF', marginBottom: '32px', textAlign: 'center' }}>🚨 Why GrooveFund is NOT a Scam</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+            {[
+              {
+                concern: 'Where does my money go?',
+                answer: 'Into a transparent community pool. You can see the exact pool size on your dashboard, updated hourly. Money is used to buy real tickets from real venues.'
+              },
+              {
+                concern: 'Will I actually win tickets?',
+                answer: 'Yes. Top 40% by points get tickets. We show tickets bought (this page), members who won, and event details. If you qualify, you get tickets.'
+              },
+              {
+                concern: 'What if the company disappears?',
+                answer: 'Pool is managed transparently with audit trails. All payments are documented. If GrooveFund closes, the pool is distributed fairly to members.'
+              },
+              {
+                concern: 'Is 12% fee too high?',
+                answer: 'Industry standard for payment processing + support is 12-15%. We\'re transparent about exactly where it goes (see breakdown above).'
+              },
+              {
+                concern: 'How do I know it\'s not rigged?',
+                answer: 'Top 40% (500+ points) always get priority. Algorithm is clear: more contributions = more points = better access. No favoritism.'
+              },
+              {
+                concern: 'Is my data safe?',
+                answer: 'Yes. All data encrypted, POPIA-compliant, processed through trusted payment providers (YOCO & EFT). We don\'t sell your data.'
+              },
+            ].map((item, i) => (
+              <div key={i} style={{ background: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #BFDBFE' }}>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#1E40AF', marginBottom: '12px' }}>❓ {item.concern}</h3>
+                <p style={{ fontSize: '13px', color: '#6B7280', lineHeight: '1.6', margin: 0 }}>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section style={{ background: 'linear-gradient(135deg, #FF751F 0%, #FF8C42 100%)', padding: '48px', borderRadius: '20px', textAlign: 'center', marginBottom: '64px' }}>
+          <h2 style={{ fontSize: '32px', fontWeight: 800, color: 'white', marginBottom: '12px' }}>Ready to Join the Movement?</h2>
+          <p style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '32px' }}>5000+ Groovers are already saving for unforgettable experiences.</p>
+          <button onClick={() => router.push('/onboarding')} style={{ padding: '14px 40px', background: 'white', color: '#FF751F', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins', transition: 'all 0.3s' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.2)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none' }} >
+            Start Saving Now 🎵
+          </button>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer style={{ background: '#1F2937', color: 'white', padding: '48px 20px 32px', borderTop: '1px solid #374151' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ fontSize: '13px', color: '#9CA3AF', margin: 0 }}>© 2026 GrooveFund. All rights reserved. Made with 🧡 in South Africa.</p>
+          <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '12px' }}>This transparency report updates every hour with live data from our database.</p>
+        </div>
+      </footer>
+    </div>
+  )
+}

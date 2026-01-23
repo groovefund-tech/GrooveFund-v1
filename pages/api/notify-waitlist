@@ -1,0 +1,84 @@
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { supabaseAdmin } from '../../lib/supabaseAdmin'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+interface NotifyResponse {
+  notified_count: number
+  error?: string
+}
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<NotifyResponse>
+) {
+  // This should only be called from your CoS or scheduled task
+  if (req.method !== 'POST') {
+    return res.status(405).json({ notified_count: 0, error: 'Method not allowed' })
+  }
+
+  try {
+    // Find waitlisted members who should be notified (when a slot freed up)
+    const { data: waitlistData, error: waitlistError } = await supabaseAdmin
+      .from('event_waitlist')
+      .select('id, user_id, event_id, position')
+      .eq('notified_at', null)
+      .order('position', { ascending: true })
+      .limit(10) // Notify top 10 from waitlist
+
+    if (waitlistError) {
+      return res.status(500).json({ notified_count: 0, error: 'Failed to query waitlist' })
+    }
+
+    let notified = 0
+
+    for (const waitlisted of waitlistData || []) {
+      // Get member email
+      const { data: memberData } = await supabaseAdmin
+        .from('profiles')
+        .select('email, display_name')
+        .eq('id', waitlisted.user_id)
+        .single()
+
+      // Get event name
+      const { data: eventData } = await supabaseAdmin
+        .from('events')
+        .select('name')
+        .eq('id', waitlisted.event_id)
+        .single()
+
+      if (memberData && eventData) {
+        // Send notification
+        try {
+          await resend.emails.send({
+            from: 'GrooveFund <onboarding@resend.dev>',
+            to: memberData.email,
+            subject: `A slot opened up for ${eventData.name}!`,
+            html: `
+              <h2>Great news!</h2>
+              <p>Hi ${memberData.display_name},</p>
+              <p>A slot just opened up for <strong>${eventData.name}</strong>. You're position ${waitlisted.position} on the waitlist.</p>
+              <p>Head back to the app to claim your spot before someone else does!</p>
+            `,
+          })
+
+          // Mark as notified
+          await supabaseAdmin
+            .from('event_waitlist')
+            .update({ notified_at: new Date().toISOString() })
+            .eq('id', waitlisted.id)
+
+          notified++
+        } catch (emailErr) {
+          console.error('Failed to notify member:', emailErr)
+        }
+      }
+    }
+
+    return res.status(200).json({ notified_count: notified })
+  } catch (err) {
+    console.error('notify-waitlist error:', err)
+    return res.status(500).json({ notified_count: 0, error: 'Internal server error' })
+  }
+}
