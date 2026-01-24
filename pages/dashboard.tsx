@@ -117,6 +117,7 @@ export default function Dashboard() {
 
   {/* Calculate top 40% OUTSIDE the JSX */}
   
+<<<<<<< HEAD
 
 
   const toggleEvent = (eventId: string) => {
@@ -234,6 +235,9 @@ export default function Dashboard() {
   }
 
     useEffect(() => {
+=======
+ useEffect(() => {
+>>>>>>> 6de60af5f6b8c6440ad96b937cfb053a080f466a
       const checkProfile = async () => {
         try {
           const { data: { user } } = await supabase.auth.getUser()
@@ -246,109 +250,10 @@ export default function Dashboard() {
       }
       checkProfile()
     }, [])
-  
-  const getTierInfo = (consecutiveMonths: number) => {
-  if (consecutiveMonths >= 24) return { 
-    name: 'Stokvel Legend', 
-    emoji: '💎', 
-    color: '#7C3AED',
-    description: "You're legendary. 24 months of pure momentum."
+
+  const toggleEvent = (eventId: string) => {
+    setExpandedEventId((prev) => (prev === eventId ? null : eventId))
   }
-  if (consecutiveMonths >= 12) return { 
-    name: 'Stokvel Guardian', 
-    emoji: '💎', 
-    color: '#FF751F',
-    description: "You're a force. A year of commitment unlocked."
-  }
-  if (consecutiveMonths >= 6) return { 
-    name: 'Stokvel Champion', 
-    emoji: '🥇', 
-    color: '#F59E0B',
-    description: "You're unstoppable. Your dedication is showing."
-  }
-  if (consecutiveMonths >= 3) return { 
-    name: 'Stokvel Builder', 
-    emoji: '🥈', 
-    color: '#9CA3AF',
-    description: "You're proving consistency matters. Keep the rhythm going."
-  }
-  if (consecutiveMonths >= 1) return { 
-    name: 'Stokvel Starter', 
-    emoji: '🥉', 
-    color: '#B45309',
-    description: "You've started. You're building the foundation."
-  }
-  return null
-}
-
-    const checkStreakMilestone = (months: number) => {
-    if (months === 3) return "🚀 Stokvel Builder unlocked! Your consistency is paying off. Keep pushing."
-    if (months === 6) return "🚀 Stokvel Champion unlocked! You're on fire. Keep the momentum going."
-    if (months === 12) return "🚀 Stokvel Guardian unlocked! A year of pure dedication."
-    if (months === 24) return "🚀 Stokvel Legend unlocked! You're a community pillar."
-    return null
-    }
-
-      // After successful spot unlock:
-
-    useEffect(() => {
-      console.log('🔍 Component mounted, about to call loadPoolMetrics')
-      loadPoolMetrics()
-    }, [])
-
-  const loadPoolMetrics = async () => {
-    try {
-      // Calculate total pool
-      const { data: paymentData, error: paymentError } = await supabase
-        .from('payments')
-        .select('amount')
-        .eq('status', 'completed')
-
-      console.log('🔍 Payment query result:', { paymentData, paymentError })
-
-      if (!paymentError && paymentData) {
-        const total = paymentData.reduce((sum, p) => sum + p.amount, 0)
-        console.log('💰 Total pool amount:', total)
-        setTotalPoolAmount(total)
-      } else if (paymentError) {
-        console.error('❌ Payment query error:', paymentError)
-      }
-
-      // Count total tickets issued
-      const { data: ticketData, error: ticketError } = await supabase
-        .from('event_members')
-        .select('id')
-        .eq('ticket_issued', true)
-
-      console.log('🔍 Ticket query result:', { ticketData, ticketError })
-
-      if (!ticketError && ticketData) {
-        console.log('🎫 Total tickets purchased:', ticketData.length)
-        setTotalTicketsPurchased(ticketData.length)
-      } else if (ticketError) {
-        console.error('❌ Ticket query error:', ticketError)
-      }
-    } catch (err) {
-      console.error('Error loading pool metrics:', err)
-    }
-  }
-
-  const handleRetry = () => { setIsLoadingProfile(true); setProfileError(null); window.location.reload() }
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      const user = session?.user
-      if (!user) { setErrorMessage('Not authenticated'); return }
-      setAuthReady(true)
-    }
-    checkAuth()
-  }, [])
-
-  useEffect(() => { if (authReady) loadDashboard() }, [authReady, loadDashboard])
-  
-
-
 
   const applyAdminPayment = async () => {
     if (!member?.user_id) return
@@ -455,6 +360,215 @@ export default function Dashboard() {
   const slotsAfter = Math.floor((confirmedPoints + topUpAmount) / 500)
   const userInitial = member?.display_name?.charAt(0).toUpperCase() || 'U'
 
+
+  const loadDashboard = useCallback(async () => {
+    setLoading(true)
+    setErrorMessage(null)
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const user = session?.user
+
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
+      const [
+        { data: profileRow },
+        { data: memberRow },
+        { data: leaderboardRows },
+        { data: joinedRows },
+        { data: streakData } ,
+      ] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, monthly_slots_used')
+          .eq('user_id', user.id)
+          .single(),
+        supabase
+          .from('leaderboard_view')
+          .select('*')
+          .eq('user_id', user.id)
+          .single(),
+        supabase
+          .from('leaderboard_view')
+          .select('*')
+          .order('rank', { ascending: true })
+          .limit(10),
+        supabase
+          .from('event_members')
+          .select('event:events(*), ticket_issued, active')
+          .eq('user_id', user.id)
+          .eq('active', true),
+         supabase
+          .from('profiles')
+          .select('current_streak_month, streak_tier, last_contribution_month')
+          .eq('id', user.id)
+          .single() 
+      ])
+     
+      const confirmed = memberRow?.effective_points ?? 0
+      setConfirmedPoints(Math.floor(confirmed))
+      setPendingPoints(0)
+
+      const activeNext = Array.isArray(joinedRows)
+        ? joinedRows
+            .filter((r: any) => r.active === true)
+            .map((r: any) => r.event)
+        : []
+
+      const joinedIds = new Set(activeNext.map((e: any) => e.id))
+        
+      // ADD THIS: Set streak state
+      if (streakData) {
+        setUserStreak({
+          currentMonth: streakData.current_streak_month || 0,
+          totalSpots: 0,
+          tier: getTierInfo(streakData.current_streak_month || 0),
+          lastContributionMonth: streakData.last_contribution_month
+        })
+      }
+    console.log('Streak data loaded:', streakData)
+    console.log('dismissedLeaderboardTip:', dismissedLeaderboardTip)
+    console.log('localStorage value:', localStorage.getItem('dismissedLeaderboardTip'))
+
+      const { data: openEvents } = await supabase
+        .from('events')
+        .select('*, event_members(count)')
+        .eq('status', 'open')
+
+      const suggestedEvents = (openEvents ?? []).filter(
+        (e: any) => !joinedIds.has(e.id)
+      )
+
+      const tSlots = Math.floor(confirmed / 500)
+      // Calculate actual slots used by summing slot_cost from all active events
+      const slotsUsed = activeNext.reduce((sum, event) => {
+        return sum + (event.slot_cost || 1)
+      }, 0)
+      const avail = Math.max(0, tSlots - slotsUsed)  // ✅ CORRECT
+
+      setMember({
+        ...memberRow,
+        monthly_slots_used: profileRow?.monthly_slots_used,
+      })
+      setLeaderboard(leaderboardRows ?? [])
+      setNextGrooves(activeNext)
+      setSuggested(suggestedEvents)
+      setTotalSlots(tSlots)
+      setAvailableSlots(avail)
+
+    } catch (err) {
+      console.error('Error loading dashboard:', err)
+      setErrorMessage('Failed to load dashboard. Please refresh.')
+    } finally {
+      setLoading(false)
+    }
+   console.log('🔍 Dashboard component rendering')
+   console.log('🔍 Supabase client:', supabase)
+
+  }, [router])
+  
+  const getTierInfo = (consecutiveMonths: number) => {
+  if (consecutiveMonths >= 24) return { 
+    name: 'Stokvel Legend', 
+    emoji: '💎', 
+    color: '#7C3AED',
+    description: "You're legendary. 24 months of pure momentum."
+  }
+  if (consecutiveMonths >= 12) return { 
+    name: 'Stokvel Guardian', 
+    emoji: '💎', 
+    color: '#FF751F',
+    description: "You're a force. A year of commitment unlocked."
+  }
+  if (consecutiveMonths >= 6) return { 
+    name: 'Stokvel Champion', 
+    emoji: '🥇', 
+    color: '#F59E0B',
+    description: "You're unstoppable. Your dedication is showing."
+  }
+  if (consecutiveMonths >= 3) return { 
+    name: 'Stokvel Builder', 
+    emoji: '🥈', 
+    color: '#9CA3AF',
+    description: "You're proving consistency matters. Keep the rhythm going."
+  }
+  if (consecutiveMonths >= 1) return { 
+    name: 'Stokvel Starter', 
+    emoji: '🥉', 
+    color: '#B45309',
+    description: "You've started. You're building the foundation."
+  }
+  return null
+}
+
+    const checkStreakMilestone = (months: number) => {
+    if (months === 3) return "🚀 Stokvel Builder unlocked! Your consistency is paying off. Keep pushing."
+    if (months === 6) return "🚀 Stokvel Champion unlocked! You're on fire. Keep the momentum going."
+    if (months === 12) return "🚀 Stokvel Guardian unlocked! A year of pure dedication."
+    if (months === 24) return "🚀 Stokvel Legend unlocked! You're a community pillar."
+    return null
+    }
+
+      // After successful spot unlock:
+
+    useEffect(() => {
+      console.log('🔍 Component mounted, about to call loadPoolMetrics')
+      loadPoolMetrics()
+    }, [])
+
+  const loadPoolMetrics = async () => {
+    try {
+      // Calculate total pool
+      const { data: paymentData, error: paymentError } = await supabase
+        .from('payments')
+        .select('amount')
+        .eq('status', 'completed')
+
+      console.log('🔍 Payment query result:', { paymentData, paymentError })
+
+      if (!paymentError && paymentData) {
+        const total = paymentData.reduce((sum, p) => sum + p.amount, 0)
+        console.log('💰 Total pool amount:', total)
+        setTotalPoolAmount(total)
+      } else if (paymentError) {
+        console.error('❌ Payment query error:', paymentError)
+      }
+
+      // Count total tickets issued
+      const { data: ticketData, error: ticketError } = await supabase
+        .from('event_members')
+        .select('id')
+        .eq('ticket_issued', true)
+
+      console.log('🔍 Ticket query result:', { ticketData, ticketError })
+
+      if (!ticketError && ticketData) {
+        console.log('🎫 Total tickets purchased:', ticketData.length)
+        setTotalTicketsPurchased(ticketData.length)
+      } else if (ticketError) {
+        console.error('❌ Ticket query error:', ticketError)
+      }
+    } catch (err) {
+      console.error('Error loading pool metrics:', err)
+    }
+  }
+
+  const handleRetry = () => { setIsLoadingProfile(true); setProfileError(null); window.location.reload() }
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      const user = session?.user
+      if (!user) { setErrorMessage('Not authenticated'); return }
+      setAuthReady(true)
+    }
+    checkAuth()
+  }, [])
+
+  useEffect(() => { if (authReady) loadDashboard() }, [authReady, loadDashboard])
   
 
   return (
@@ -840,8 +954,7 @@ export default function Dashboard() {
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button onClick={() => setShowTopUp(false)} className="btn-secondary" style={{ flex: 1, fontSize: '13px', padding: '10px' }}>Cancel</button>
-                  <button onClick={handleTopUp} className="btn-primary" style={{ flex: 1, fontSize: '13px', padding: '10px' }}>Add Groove Balance</button>
-                </div>
+                  <button onClick{() => handleTopUp(amount)} className="btn-primary" style={{ flex: 1, fontSize: '13px', padding: '10px' }}>Add Groove Balance</button>       
               </div>
             </div>
           )}
