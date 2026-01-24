@@ -77,7 +77,9 @@ export default function Dashboard() {
       
   const toggleEvent = (eventId: string) => {
     setExpandedEventId((prev) => (prev === eventId ? null : eventId))
-  }  const isTopMember = member?.rank && member.rank <= 40
+  }
+  
+ const isTopMember = member?.rank && member.rank <= 40
    
   const updateProfile = async () => {
     if (!newDisplayName.trim()) { setErrorMessage('Display name cannot be empty'); return }
