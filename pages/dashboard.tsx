@@ -129,7 +129,7 @@ export default function Dashboard() {
         finally { setIsLoadingProfile(false) }
       }
       checkProfile()
-    }, [setProfileError])
+    }, [])
 
   const toggleEvent = (eventId: string) => {
     setExpandedEventId((prev) => (prev === eventId ? null : eventId))
