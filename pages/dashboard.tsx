@@ -187,7 +187,7 @@ export default function Dashboard() {
         setUserStreak({
           currentMonth: streakData.current_streak_month || 0,
           totalSpots: 0,
-          tier: getTierInfo(streakData.current_streak_month || 0) || null,
+          tier: getTierInfo(streakData.current_streak_month || 0),
           lastContributionMonth: streakData.last_contribution_month
         })
       }
