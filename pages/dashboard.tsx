@@ -1,4 +1,4 @@
-it// pages/dashboard.tsx
+// pages/dashboard.tsx
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import { supabase } from '../lib/supabase'
