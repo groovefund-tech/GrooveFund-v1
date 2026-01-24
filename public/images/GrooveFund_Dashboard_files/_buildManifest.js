@@ -1,0 +1,60 @@
+self.__BUILD_MANIFEST = {
+  "/blog": [
+    "static/chunks/pages/blog.js"
+  ],
+  "/dashboard": [
+    "static/chunks/pages/dashboard.js"
+  ],
+  "__rewrites": {
+    "afterFiles": [],
+    "beforeFiles": [],
+    "fallback": []
+  },
+  "sortedPages": [
+    "/",
+    "/_app",
+    "/_error",
+    "/admin/audit-log",
+    "/admin/events",
+    "/admin/payments",
+    "/admin/upload-blog-image",
+    "/api/admin/apply-payment",
+    "/api/admin/attach-ticket-pdf",
+    "/api/admin/backfill-payment",
+    "/api/admin/create-event",
+    "/api/admin/get-members",
+    "/api/admin/issue-ticket",
+    "/api/admin/save-ticket-url",
+    "/api/admin/upload-blog-image",
+    "/api/admin/upload-ticket-pdf",
+    "/api/apply-payment",
+    "/api/check-event-capacity",
+    "/api/create-checkout",
+    "/api/create-topup",
+    "/api/free-up-slot",
+    "/api/join-event",
+    "/api/verify-payment",
+    "/api/yoco-webhook",
+    "/auth/callback",
+    "/auth-callback",
+    "/blog",
+    "/blog/[slug]",
+    "/contact",
+    "/dashboard",
+    "/forgot-password",
+    "/help",
+    "/how-it-works",
+    "/leaderboard",
+    "/login",
+    "/onboarding",
+    "/payment-verify",
+    "/payments",
+    "/privacy",
+    "/referrals",
+    "/reset-password",
+    "/signup",
+    "/terms",
+    "/transparency",
+    "/verify-email"
+  ]
+};self.__BUILD_MANIFEST_CB && self.__BUILD_MANIFEST_CB()
