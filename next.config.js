@@ -1,4 +1,5 @@
 // next.config.js
+// Force rebuild - clear old cache
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
