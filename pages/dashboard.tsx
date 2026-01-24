@@ -117,9 +117,6 @@ export default function Dashboard() {
 
   {/* Calculate top 40% OUTSIDE the JSX */}
   
-<<<<<<< HEAD
-
-
   const toggleEvent = (eventId: string) => {
     setExpandedEventId((prev) => (prev === eventId ? null : eventId))
   }
@@ -235,9 +232,6 @@ export default function Dashboard() {
   }
 
     useEffect(() => {
-=======
- useEffect(() => {
->>>>>>> 6de60af5f6b8c6440ad96b937cfb053a080f466a
       const checkProfile = async () => {
         try {
           const { data: { user } } = await supabase.auth.getUser()
