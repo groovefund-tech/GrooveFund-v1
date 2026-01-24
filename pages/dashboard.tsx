@@ -46,15 +46,6 @@ export default function Dashboard() {
   const [totalPoolAmount, setTotalPoolAmount] = useState(0)
   const [totalTicketsPurchased, setTotalTicketsPurchased] = useState(0)
 
-
-  const [dismissedLeaderboardTip, setDismissedLeaderboardTip] = useState(() => {
-    if (typeof window !== 'undefined') {
-      if (!member?.id) return false
-        return localStorage.getItem('dismissedLeaderboardTip') === 'true'
-    }
-    return false
- })
-
    const checkProfile = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -78,6 +69,16 @@ export default function Dashboard() {
   const toggleEvent = (eventId: string) => {
     setExpandedEventId((prev) => (prev === eventId ? null : eventId))
   }
+
+  const [dismissedLeaderboardTip, setDismissedLeaderboardTip] = useState(() => {
+    if (typeof window !== 'undefined') {
+      if (!member?.id) return false
+        return localStorage.getItem('dismissedLeaderboardTip') === 'true'
+    }
+    return false
+ })
+
+  
   
  const isTopMember = member?.rank && member.rank <= 40
    
