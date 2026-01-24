@@ -1,4 +1,4 @@
-// pages/dashboard.tsx
+it// pages/dashboard.tsx
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import { supabase } from '../lib/supabase'
@@ -75,8 +75,9 @@ export default function Dashboard() {
     checkProfile()
   }, [])
       
-  
-  const isTopMember = member?.rank && member.rank <= 40
+  const toggleEvent = (eventId: string) => {
+    setExpandedEventId((prev) => (prev === eventId ? null : eventId))
+  }  const isTopMember = member?.rank && member.rank <= 40
    
   const updateProfile = async () => {
     if (!newDisplayName.trim()) { setErrorMessage('Display name cannot be empty'); return }
@@ -251,10 +252,6 @@ export default function Dashboard() {
    console.log('🔍 Dashboard component rendering')
    console.log('🔍 Supabase client:', supabase)
 
-  }
-
-  const toggleEvent = (eventId: string) => {
-    setExpandedEventId((prev) => (prev === eventId ? null : eventId))
   }
 
   const applyAdminPayment = async () => {
