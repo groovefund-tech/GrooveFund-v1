@@ -40,7 +40,7 @@ export default function Dashboard() {
   const [userStreak, setUserStreak] = useState({
     currentMonth: 0, // consecutive months
     totalSpots: 0, // total spots unlocked
-    tier: null,
+    tier: null as any,
     lastContributionMonth: new Date().toISOString().slice(0, 7) // YYYY-MM
     })
   const [totalPoolAmount, setTotalPoolAmount] = useState(0)
@@ -123,9 +123,10 @@ export default function Dashboard() {
     setExpandedEventId((prev) => (prev === eventId ? null : eventId))
   }
 
-  const loadDashboard = useCallback(async () => {
+  const loadDashboard = async () => {
     setLoading(true)
     setErrorMessage(null)
+     }
 
     try {
       const { data: { session } } = await supabase.auth.getSession()
@@ -187,7 +188,7 @@ export default function Dashboard() {
         setUserStreak({
           currentMonth: streakData.current_streak_month || 0,
           totalSpots: 0,
-          tier: getTierInfo(streakData.current_streak_month || 0) || null,
+          tier: getTierInfo(streakData.current_streak_month || 0),
           lastContributionMonth: streakData.last_contribution_month
         })
       }
@@ -230,7 +231,7 @@ export default function Dashboard() {
    console.log('🔍 Dashboard component rendering')
    console.log('🔍 Supabase client:', supabase)
 
-  }, [router])
+  }
 
     useEffect(() => {
       const checkProfile = async () => {
