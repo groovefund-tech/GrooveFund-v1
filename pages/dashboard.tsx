@@ -117,7 +117,19 @@ export default function Dashboard() {
 
   {/* Calculate top 40% OUTSIDE the JSX */}
   
-
+ useEffect(() => {
+      const checkProfile = async () => {
+        try {
+          const { data: { user } } = await supabase.auth.getUser()
+          if (!user) { setProfileError('Not authenticated'); return }
+          const { data, error } = await supabase.from('profiles').select('id').eq('id', user.id).single()
+          if (error || !data) setProfileError("We're setting up your Groove account. Please refresh the page.")
+          else setProfileError(null)
+        } catch (err) { setProfileError('Unable to load profile. Please try again.') }
+        finally { setIsLoadingProfile(false) }
+      }
+      checkProfile()
+    }, [setProfileError])
 
   const toggleEvent = (eventId: string) => {
     setExpandedEventId((prev) => (prev === eventId ? null : eventId))
@@ -231,20 +243,6 @@ export default function Dashboard() {
    console.log('🔍 Supabase client:', supabase)
 
   }, [router])
-
-    useEffect(() => {
-      const checkProfile = async () => {
-        try {
-          const { data: { user } } = await supabase.auth.getUser()
-          if (!user) { setProfileError('Not authenticated'); return }
-          const { data, error } = await supabase.from('profiles').select('id').eq('id', user.id).single()
-          if (error || !data) setProfileError("We're setting up your Groove account. Please refresh the page.")
-          else setProfileError(null)
-        } catch (err) { setProfileError('Unable to load profile. Please try again.') }
-        finally { setIsLoadingProfile(false) }
-      }
-      checkProfile()
-    }, [])
   
   const getTierInfo = (consecutiveMonths: number) => {
   if (consecutiveMonths >= 24) return { 
