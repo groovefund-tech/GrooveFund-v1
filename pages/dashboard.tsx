@@ -135,6 +135,171 @@ export default function Dashboard() {
     setExpandedEventId((prev) => (prev === eventId ? null : eventId))
   }
 
+    useEffect(() => {
+      console.log('🔍 Component mounted, about to call loadPoolMetrics')
+      loadPoolMetrics()
+    }, [])
+
+  const loadPoolMetrics = async () => {
+    try {
+      // Calculate total pool
+      const { data: paymentData, error: paymentError } = await supabase
+        .from('payments')
+        .select('amount')
+        .eq('status', 'completed')
+
+      console.log('🔍 Payment query result:', { paymentData, paymentError })
+
+      if (!paymentError && paymentData) {
+        const total = paymentData.reduce((sum, p) => sum + p.amount, 0)
+        console.log('💰 Total pool amount:', total)
+        setTotalPoolAmount(total)
+      } else if (paymentError) {
+        console.error('❌ Payment query error:', paymentError)
+      }
+
+      // Count total tickets issued
+      const { data: ticketData, error: ticketError } = await supabase
+        .from('event_members')
+        .select('id')
+        .eq('ticket_issued', true)
+
+      console.log('🔍 Ticket query result:', { ticketData, ticketError })
+
+      if (!ticketError && ticketData) {
+        console.log('🎫 Total tickets purchased:', ticketData.length)
+        setTotalTicketsPurchased(ticketData.length)
+      } else if (ticketError) {
+        console.error('❌ Ticket query error:', ticketError)
+      }
+    } catch (err) {
+      console.error('Error loading pool metrics:', err)
+    }
+  }
+
+  const handleRetry = () => { setIsLoadingProfile(true); setProfileError(null); window.location.reload() }
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      const user = session?.user
+      if (!user) { setErrorMessage('Not authenticated'); return }
+      setAuthReady(true)
+    }
+    checkAuth()
+  }, [])
+
+  useEffect(() => { if (authReady) loadDashboard() }, [authReady, loadDashboard])
+  
+
+
+
+  const applyAdminPayment = async () => {
+    if (!member?.user_id) return
+    try {
+      await fetch('/api/admin/apply-payment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target_user_id: member.user_id, amount: 500 }) })
+      await loadDashboard()
+      setErrorMessage(null)
+    } catch (err) { console.error(err); setErrorMessage('Error applying payment') }
+  }
+
+  const joinEvent = async (eventId: string, eventName: string) => {
+    console.log('🔍 DEBUGGING: Attempting to lock event:', { eventId, eventName })
+    
+    setConfirmationModal({
+      isOpen: true,
+      title: `Lock In ${eventName}?`,
+      message: `You're about to lock a spot for this event. You can free it up later if needed.`,
+      onConfirm: async () => {
+        setConfirmationModal((prev: any) => ({
+          ...prev,
+          isLoading: true,
+        }))
+        try {
+          if (availableSlots <= 0) {
+            setErrorMessage(
+              'No available spots. Add Groove Balance to get more spots.'
+            )
+            setConfirmationModal({
+              isOpen: false,
+              title: '',
+              message: '',
+              onConfirm: () => {},
+            })
+            return
+          }
+
+          const { data: { session } } = await supabase.auth.getSession()
+          const user = session?.user
+
+          if (!user) {
+            setErrorMessage('Not authenticated')
+            return
+          }
+
+          console.log('🔍 DEBUGGING: Calling join_event RPC with:', { 
+            p_user_id: user.id, 
+            p_event_id: eventId 
+          })
+
+          const { data, error } = await supabase.rpc('join_event', {
+            p_user_id: user.id,
+            p_event_id: eventId,
+          })
+
+          console.log('🔍 DEBUGGING: RPC Response:', { data, error })
+
+          if (error) {
+            console.error('🔍 DEBUGGING: RPC Error:', error)
+            setErrorMessage(error.message || 'Failed to join event')
+          } else {
+            setErrorMessage(`🎉 You're locked in and building your streak!`)
+            await loadDashboard()
+          }
+        } catch (err) {
+          console.error('Failed to lock spot:', err)
+          setErrorMessage('Unable to lock spot for event. Please try again.')
+        } finally {
+          setConfirmationModal({
+            isOpen: false,
+            title: '',
+            message: '',
+            onConfirm: () => {},
+          })
+        }
+      },
+      isLoading: false,
+    })
+  }
+
+  const freeUpSlot = async (eventId: string, eventName: string) => {
+    setConfirmationModal({
+      isOpen: true,
+      title: `Release spot for ${eventName}?`,
+      message: `You will lose this spot and the slot will be freed.`,
+      onConfirm: async () => {
+        setConfirmationModal((prev: any) => ({ ...prev, isLoading: true }))
+        try {
+          const { data: sessionData } = await supabase.auth.getSession()
+          const user = sessionData.session?.user
+          if (!user) { router.push('/login'); return }
+          const { error } = await supabase.rpc('free_up_slot', { p_user_id: user.id, p_event_id: eventId })
+          if (error) { setErrorMessage(error.message || 'Failed to release spot') } else { setErrorMessage(null); await loadDashboard() }
+        } catch (err) { console.error('Releasing slot crashed:', err); setErrorMessage('Unable to release spot. Please try again.') }
+        finally { setConfirmationModal({ isOpen: false, title: '', message: '', onConfirm: () => {} }) }
+      },
+      isLoading: false,
+    })
+  }
+
+  if (loading) return <div style={{ padding: 32 }}>Loading Your Grooves…</div>
+  if (!member) return <div style={{ padding: 32 }}>No member record.</div>
+
+  const joinedIds = (nextGrooves ?? []).map((e: any) => e.id)
+  const slotsAfter = Math.floor((confirmedPoints + topUpAmount) / 500)
+  const userInitial = member?.display_name?.charAt(0).toUpperCase() || 'U'
+
+
   const loadDashboard = useCallback(async () => {
     setLoading(true)
     setErrorMessage(null)
@@ -343,115 +508,6 @@ export default function Dashboard() {
   }, [])
 
   useEffect(() => { if (authReady) loadDashboard() }, [authReady, loadDashboard])
-  
-
-
-
-  const applyAdminPayment = async () => {
-    if (!member?.user_id) return
-    try {
-      await fetch('/api/admin/apply-payment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target_user_id: member.user_id, amount: 500 }) })
-      await loadDashboard()
-      setErrorMessage(null)
-    } catch (err) { console.error(err); setErrorMessage('Error applying payment') }
-  }
-
-  const joinEvent = async (eventId: string, eventName: string) => {
-    console.log('🔍 DEBUGGING: Attempting to lock event:', { eventId, eventName })
-    
-    setConfirmationModal({
-      isOpen: true,
-      title: `Lock In ${eventName}?`,
-      message: `You're about to lock a spot for this event. You can free it up later if needed.`,
-      onConfirm: async () => {
-        setConfirmationModal((prev: any) => ({
-          ...prev,
-          isLoading: true,
-        }))
-        try {
-          if (availableSlots <= 0) {
-            setErrorMessage(
-              'No available spots. Add Groove Balance to get more spots.'
-            )
-            setConfirmationModal({
-              isOpen: false,
-              title: '',
-              message: '',
-              onConfirm: () => {},
-            })
-            return
-          }
-
-          const { data: { session } } = await supabase.auth.getSession()
-          const user = session?.user
-
-          if (!user) {
-            setErrorMessage('Not authenticated')
-            return
-          }
-
-          console.log('🔍 DEBUGGING: Calling join_event RPC with:', { 
-            p_user_id: user.id, 
-            p_event_id: eventId 
-          })
-
-          const { data, error } = await supabase.rpc('join_event', {
-            p_user_id: user.id,
-            p_event_id: eventId,
-          })
-
-          console.log('🔍 DEBUGGING: RPC Response:', { data, error })
-
-          if (error) {
-            console.error('🔍 DEBUGGING: RPC Error:', error)
-            setErrorMessage(error.message || 'Failed to join event')
-          } else {
-            setErrorMessage(`🎉 You're locked in and building your streak!`)
-            await loadDashboard()
-          }
-        } catch (err) {
-          console.error('Failed to lock spot:', err)
-          setErrorMessage('Unable to lock spot for event. Please try again.')
-        } finally {
-          setConfirmationModal({
-            isOpen: false,
-            title: '',
-            message: '',
-            onConfirm: () => {},
-          })
-        }
-      },
-      isLoading: false,
-    })
-  }
-
-  const freeUpSlot = async (eventId: string, eventName: string) => {
-    setConfirmationModal({
-      isOpen: true,
-      title: `Release spot for ${eventName}?`,
-      message: `You will lose this spot and the slot will be freed.`,
-      onConfirm: async () => {
-        setConfirmationModal((prev: any) => ({ ...prev, isLoading: true }))
-        try {
-          const { data: sessionData } = await supabase.auth.getSession()
-          const user = sessionData.session?.user
-          if (!user) { router.push('/login'); return }
-          const { error } = await supabase.rpc('free_up_slot', { p_user_id: user.id, p_event_id: eventId })
-          if (error) { setErrorMessage(error.message || 'Failed to release spot') } else { setErrorMessage(null); await loadDashboard() }
-        } catch (err) { console.error('Releasing slot crashed:', err); setErrorMessage('Unable to release spot. Please try again.') }
-        finally { setConfirmationModal({ isOpen: false, title: '', message: '', onConfirm: () => {} }) }
-      },
-      isLoading: false,
-    })
-  }
-
-  if (loading) return <div style={{ padding: 32 }}>Loading Your Grooves…</div>
-  if (!member) return <div style={{ padding: 32 }}>No member record.</div>
-
-  const joinedIds = (nextGrooves ?? []).map((e: any) => e.id)
-  const slotsAfter = Math.floor((confirmedPoints + topUpAmount) / 500)
-  const userInitial = member?.display_name?.charAt(0).toUpperCase() || 'U'
-
   
 
   return (
