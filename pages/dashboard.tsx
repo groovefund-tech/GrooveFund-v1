@@ -40,7 +40,7 @@ export default function Dashboard() {
   const [userStreak, setUserStreak] = useState({
     currentMonth: 0, // consecutive months
     totalSpots: 0, // total spots unlocked
-    tier: null,
+    tier: null as any,
     lastContributionMonth: new Date().toISOString().slice(0, 7) // YYYY-MM
     })
   const [totalPoolAmount, setTotalPoolAmount] = useState(0)
