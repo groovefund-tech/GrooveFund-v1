@@ -135,65 +135,6 @@ export default function Dashboard() {
     setExpandedEventId((prev) => (prev === eventId ? null : eventId))
   }
 
-    useEffect(() => {
-      console.log('🔍 Component mounted, about to call loadPoolMetrics')
-      loadPoolMetrics()
-    }, [])
-
-  const loadPoolMetrics = async () => {
-    try {
-      // Calculate total pool
-      const { data: paymentData, error: paymentError } = await supabase
-        .from('payments')
-        .select('amount')
-        .eq('status', 'completed')
-
-      console.log('🔍 Payment query result:', { paymentData, paymentError })
-
-      if (!paymentError && paymentData) {
-        const total = paymentData.reduce((sum, p) => sum + p.amount, 0)
-        console.log('💰 Total pool amount:', total)
-        setTotalPoolAmount(total)
-      } else if (paymentError) {
-        console.error('❌ Payment query error:', paymentError)
-      }
-
-      // Count total tickets issued
-      const { data: ticketData, error: ticketError } = await supabase
-        .from('event_members')
-        .select('id')
-        .eq('ticket_issued', true)
-
-      console.log('🔍 Ticket query result:', { ticketData, ticketError })
-
-      if (!ticketError && ticketData) {
-        console.log('🎫 Total tickets purchased:', ticketData.length)
-        setTotalTicketsPurchased(ticketData.length)
-      } else if (ticketError) {
-        console.error('❌ Ticket query error:', ticketError)
-      }
-    } catch (err) {
-      console.error('Error loading pool metrics:', err)
-    }
-  }
-
-  const handleRetry = () => { setIsLoadingProfile(true); setProfileError(null); window.location.reload() }
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      const user = session?.user
-      if (!user) { setErrorMessage('Not authenticated'); return }
-      setAuthReady(true)
-    }
-    checkAuth()
-  }, [])
-
-  useEffect(() => { if (authReady) loadDashboard() }, [authReady, loadDashboard])
-  
-
-
-
   const applyAdminPayment = async () => {
     if (!member?.user_id) return
     try {
