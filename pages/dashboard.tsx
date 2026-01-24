@@ -231,8 +231,7 @@ export default function Dashboard() {
 
   }
 
-    useEffect(() => {
-      const checkProfile = async () => {
+    const checkProfile = async () => {
         try {
           const { data: { user } } = await supabase.auth.getUser()
           if (!user) { setProfileError('Not authenticated'); return }
@@ -242,6 +241,7 @@ export default function Dashboard() {
         } catch (err) { setProfileError('Unable to load profile. Please try again.') }
         finally { setIsLoadingProfile(false) }
       }
+    useEffect(() => {
       checkProfile()
     }, [])
 
