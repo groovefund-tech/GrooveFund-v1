@@ -7,8 +7,6 @@ import issueTicket from './api/admin/issue-ticket'
 import Image from 'next/image'
 import { TierInfo, UserStreak, Member } from '../lib/types'
 
-
-
 export default function Dashboard() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [showAdminPanel, setShowAdminPanel] = useState(false)
@@ -66,8 +64,6 @@ export default function Dashboard() {
     checkProfile()
   }, [])
       
-
-
   const [dismissedLeaderboardTip, setDismissedLeaderboardTip] = useState(() => {
     if (typeof window !== 'undefined') {
       if (!member?.id) return false
@@ -155,9 +151,8 @@ export default function Dashboard() {
 
       if (!user) {
         setLoading(false)
-        return
-      
-    
+        return 
+      }
       const [
         { data: profileRow },
         { data: memberRow },
