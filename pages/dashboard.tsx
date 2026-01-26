@@ -1,13 +1,14 @@
 
 // Force Vercel rebuild
 // pages/dashboard.tsx
+import { TierInfo, UserStreak, Member } from '../lib/types'
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import { supabase } from '../lib/supabase'
 import ProfileMenu from '../components/ProfileMenu'
 import issueTicket from './api/admin/issue-ticket' 
 import Image from 'next/image'
-import { TierInfo, UserStreak, Member } from '../lib/types'
+
 
 export default function Dashboard() {
   const [isAdmin, setIsAdmin] = useState(false)
