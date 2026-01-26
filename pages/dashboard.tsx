@@ -66,9 +66,7 @@ export default function Dashboard() {
     checkProfile()
   }, [])
       
-  const toggleEvent = (eventId: string) => {
-    setExpandedEventId((prev) => (prev === eventId ? null : eventId))
-  }
+
 
   const [dismissedLeaderboardTip, setDismissedLeaderboardTip] = useState(() => {
     if (typeof window !== 'undefined') {
