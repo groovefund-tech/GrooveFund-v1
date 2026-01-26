@@ -139,7 +139,99 @@ export default function Dashboard() {
       setErrorMessage('Error starting payment')
     }
   }
+   const getTierInfo = (consecutiveMonths: number) => {
+  if (consecutiveMonths >= 24) return { 
+    name: 'Stokvel Legend', 
+    emoji: '💎', 
+    color: '#7C3AED',
+    description: "You're legendary. 24 months of pure momentum."
+  }
+  if (consecutiveMonths >= 12) return { 
+    name: 'Stokvel Guardian', 
+    emoji: '💎', 
+    color: '#FF751F',
+    description: "You're a force. A year of commitment unlocked."
+  }
+  if (consecutiveMonths >= 6) return { 
+    name: 'Stokvel Champion', 
+    emoji: '🥇', 
+    color: '#F59E0B',
+    description: "You're unstoppable. Your dedication is showing."
+  }
+  if (consecutiveMonths >= 3) return { 
+    name: 'Stokvel Builder', 
+    emoji: '🥈', 
+    color: '#9CA3AF',
+    description: "You're proving consistency matters. Keep the rhythm going."
+  }
+  if (consecutiveMonths >= 1) return { 
+    name: 'Stokvel Starter', 
+    emoji: '🥉', 
+    color: '#B45309',
+    description: "You've started. You're building the foundation."
+  }
+  return null
+}
 
+    const checkStreakMilestone = (months: number) => {
+    if (months === 3) return "🚀 Stokvel Builder unlocked! Your consistency is paying off. Keep pushing."
+    if (months === 6) return "🚀 Stokvel Champion unlocked! You're on fire. Keep the momentum going."
+    if (months === 12) return "🚀 Stokvel Guardian unlocked! A year of pure dedication."
+    if (months === 24) return "🚀 Stokvel Legend unlocked! You're a community pillar."
+    return null
+    }
+
+      // After successful spot unlock:
+
+    useEffect(() => {
+      console.log('🔍 Component mounted, about to call loadPoolMetrics')
+      loadPoolMetrics()
+    }, [])
+
+
+
+  const loadPoolMetrics = async () => {
+    try {
+      // Calculate total pool
+      const { data: paymentData, error: paymentError } = await supabase
+        .from('payments')
+        .select('amount')
+        .eq('status', 'completed')
+
+      console.log('🔍 Payment query result:', { paymentData, paymentError })
+
+      if (!paymentError && paymentData) {
+        const total = paymentData.reduce((sum, p) => sum + p.amount, 0)
+        console.log('💰 Total pool amount:', total)
+        setTotalPoolAmount(total)
+      } else if (paymentError) {
+        console.error('❌ Payment query error:', paymentError)
+      }
+    
+      // Count total tickets issued
+      const { data: ticketData, error: ticketError } = await supabase
+        .from('event_members')
+        .select('id')
+        .eq('ticket_issued', true)
+
+      console.log('🔍 Ticket query result:', { ticketData, ticketError })
+
+      if (!ticketError && ticketData) {
+        console.log('🎫 Total tickets purchased:', ticketData.length)
+        setTotalTicketsPurchased(ticketData.length)
+      } else if (ticketError) {
+        console.error('❌ Ticket query error:', ticketError)
+      }
+    } catch (err) {
+      console.error('Error loading pool metrics:', err)
+    }
+  }
+
+  const handleRetry = () => { setIsLoadingProfile(true); setProfileError(null); window.location.reload() }
+
+
+  
+  
   {/* Calculate top 40% OUTSIDE the JSX */}
   
   const loadDashboard = async () => {
@@ -356,97 +448,7 @@ export default function Dashboard() {
   if (loading) return <div style={{ padding: 32 }}>Loading Your Grooves…</div>
   if (!member) return <div style={{ padding: 32 }}>No member record.</div>
   
-  const getTierInfo = (consecutiveMonths: number) => {
-  if (consecutiveMonths >= 24) return { 
-    name: 'Stokvel Legend', 
-    emoji: '💎', 
-    color: '#7C3AED',
-    description: "You're legendary. 24 months of pure momentum."
-  }
-  if (consecutiveMonths >= 12) return { 
-    name: 'Stokvel Guardian', 
-    emoji: '💎', 
-    color: '#FF751F',
-    description: "You're a force. A year of commitment unlocked."
-  }
-  if (consecutiveMonths >= 6) return { 
-    name: 'Stokvel Champion', 
-    emoji: '🥇', 
-    color: '#F59E0B',
-    description: "You're unstoppable. Your dedication is showing."
-  }
-  if (consecutiveMonths >= 3) return { 
-    name: 'Stokvel Builder', 
-    emoji: '🥈', 
-    color: '#9CA3AF',
-    description: "You're proving consistency matters. Keep the rhythm going."
-  }
-  if (consecutiveMonths >= 1) return { 
-    name: 'Stokvel Starter', 
-    emoji: '🥉', 
-    color: '#B45309',
-    description: "You've started. You're building the foundation."
-  }
-  return null
-}
-
-    const checkStreakMilestone = (months: number) => {
-    if (months === 3) return "🚀 Stokvel Builder unlocked! Your consistency is paying off. Keep pushing."
-    if (months === 6) return "🚀 Stokvel Champion unlocked! You're on fire. Keep the momentum going."
-    if (months === 12) return "🚀 Stokvel Guardian unlocked! A year of pure dedication."
-    if (months === 24) return "🚀 Stokvel Legend unlocked! You're a community pillar."
-    return null
-    }
-
-      // After successful spot unlock:
-
-    useEffect(() => {
-      console.log('🔍 Component mounted, about to call loadPoolMetrics')
-      loadPoolMetrics()
-    }, [])
-
-
-
-  const loadPoolMetrics = async () => {
-    try {
-      // Calculate total pool
-      const { data: paymentData, error: paymentError } = await supabase
-        .from('payments')
-        .select('amount')
-        .eq('status', 'completed')
-
-      console.log('🔍 Payment query result:', { paymentData, paymentError })
-
-      if (!paymentError && paymentData) {
-        const total = paymentData.reduce((sum, p) => sum + p.amount, 0)
-        console.log('💰 Total pool amount:', total)
-        setTotalPoolAmount(total)
-      } else if (paymentError) {
-        console.error('❌ Payment query error:', paymentError)
-      }
-    
-      // Count total tickets issued
-      const { data: ticketData, error: ticketError } = await supabase
-        .from('event_members')
-        .select('id')
-        .eq('ticket_issued', true)
-
-      console.log('🔍 Ticket query result:', { ticketData, ticketError })
-
-      if (!ticketError && ticketData) {
-        console.log('🎫 Total tickets purchased:', ticketData.length)
-        setTotalTicketsPurchased(ticketData.length)
-      } else if (ticketError) {
-        console.error('❌ Ticket query error:', ticketError)
-      }
-    } catch (err) {
-      console.error('Error loading pool metrics:', err)
-    }
-  }
-
-  const handleRetry = () => { setIsLoadingProfile(true); setProfileError(null); window.location.reload() }
-
-  useEffect(() => {
+   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       const user = session?.user
@@ -457,7 +459,6 @@ export default function Dashboard() {
   }, [])
 
   useEffect(() => { if (authReady) loadDashboard() }, [authReady, loadDashboard])
-  
 
   return (
     <>
