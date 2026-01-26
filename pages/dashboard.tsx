@@ -156,7 +156,7 @@ export default function Dashboard() {
       if (!user) {
         setLoading(false)
         return
-      }
+      
     
       const [
         { data: profileRow },
@@ -191,7 +191,7 @@ export default function Dashboard() {
           .eq('id', user.id)
           .single() 
       ])
-     
+      }
       const confirmed = memberRow?.effective_points ?? 0
       setConfirmedPoints(Math.floor(confirmed))
       setPendingPoints(0)
