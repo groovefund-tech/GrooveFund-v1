@@ -302,11 +302,6 @@ export default function Dashboard() {
           lastContributionMonth: streakData.last_contribution_month
         })
       }
-      try { 
-      catch (err) {
-        console.error('Error in loadDashboard:', err)
-        setErrorMessage('Failed to load dashboard. Please refresh.')
-    }
     console.log('Streak data loaded:', streakData)
     console.log('dismissedLeaderboardTip:', dismissedLeaderboardTip)
     console.log('localStorage value:', localStorage.getItem('dismissedLeaderboardTip'))
