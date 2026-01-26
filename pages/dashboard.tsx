@@ -302,7 +302,8 @@ export default function Dashboard() {
           lastContributionMonth: streakData.last_contribution_month
         })
       }
-       catch (err) {
+      try { 
+      catch (err) {
         console.error('Error in loadDashboard:', err)
         setErrorMessage('Failed to load dashboard. Please refresh.')
     }
