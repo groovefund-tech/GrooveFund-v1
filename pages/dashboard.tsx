@@ -216,7 +216,7 @@ export default function Dashboard() {
     console.log('Streak data loaded:', streakData)
     console.log('dismissedLeaderboardTip:', dismissedLeaderboardTip)
     console.log('localStorage value:', localStorage.getItem('dismissedLeaderboardTip'))
-    }
+    
       const { data: openEvents } = await supabase
         .from('events')
         .select('*, event_members(count)')
@@ -242,7 +242,7 @@ export default function Dashboard() {
       setSuggested(suggestedEvents)
       setTotalSlots(tSlots)
       setAvailableSlots(avail)
-
+  }
     } catch (err) {
       console.error('Error loading dashboard:', err)
       setErrorMessage('Failed to load dashboard. Please refresh.')
