@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import { supabase } from '../lib/supabase'
 import ProfileMenu from '../components/ProfileMenu'
-import issueTicket from './api/admin/issue-ticket'
+import issueTicket from './api/admin/issue-ticket' 
 import Image from 'next/image'
 import { TierInfo, UserStreak, Member } from '../lib/types'
 
