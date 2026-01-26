@@ -188,7 +188,6 @@ export default function Dashboard() {
           .eq('id', user.id)
           .single() 
       ])
-      }
       const confirmed = memberRow?.effective_points ?? 0
       setConfirmedPoints(Math.floor(confirmed))
       setPendingPoints(0)
@@ -210,6 +209,10 @@ export default function Dashboard() {
           lastContributionMonth: streakData.last_contribution_month
         })
       }
+       catch (err) {
+        console.error('Error in loadDashboard:', err)
+        setErrorMessage('Failed to load dashboard. Please refresh.')
+    }
     console.log('Streak data loaded:', streakData)
     console.log('dismissedLeaderboardTip:', dismissedLeaderboardTip)
     console.log('localStorage value:', localStorage.getItem('dismissedLeaderboardTip'))
