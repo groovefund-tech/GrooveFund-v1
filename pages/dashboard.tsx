@@ -405,11 +405,11 @@ export default function Dashboard() {
           } else {
             setErrorMessage(`🎉 You're locked in and building your streak!`)
             await loadDashboard()
-          
-        } catch (err) {
-          console.error('Failed to lock spot:', err)
-          setErrorMessage('Unable to lock spot for event. Please try again.')
-        } finally {
+          }
+          } catch (err) {
+            console.error('Failed to lock spot:', err)
+            setErrorMessage('Unable to lock spot for event. Please try again.')
+          } finally {
           setConfirmationModal({
             isOpen: false,
             title: '',
