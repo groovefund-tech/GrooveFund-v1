@@ -216,7 +216,7 @@ export default function Dashboard() {
     console.log('Streak data loaded:', streakData)
     console.log('dismissedLeaderboardTip:', dismissedLeaderboardTip)
     console.log('localStorage value:', localStorage.getItem('dismissedLeaderboardTip'))
-
+    }
       const { data: openEvents } = await supabase
         .from('events')
         .select('*, event_members(count)')
@@ -904,4 +904,4 @@ export default function Dashboard() {
     </>
   )
 }
-      }
+      
