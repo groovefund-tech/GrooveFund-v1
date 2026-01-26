@@ -533,7 +533,7 @@ export default function Dashboard() {
       } else if (paymentError) {
         console.error('❌ Payment query error:', paymentError)
       }
-
+    }
       // Count total tickets issued
       const { data: ticketData, error: ticketError } = await supabase
         .from('event_members')
