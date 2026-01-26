@@ -143,10 +143,6 @@ export default function Dashboard() {
 
   {/* Calculate top 40% OUTSIDE the JSX */}
   
-  const toggleEvent = (eventId: string) => {
-    setExpandedEventId((prev) => (prev === eventId ? null : eventId))
-  }
-
   const loadDashboard = async () => {
     setLoading(true)
     setErrorMessage(null)
