@@ -280,31 +280,31 @@ export default function Dashboard() {
           .select('current_streak_month, streak_tier, last_contribution_month')
           .eq('id', user.id)
           .single() 
-      ])
-      const confirmed = memberRow?.effective_points ?? 0
-      setConfirmedPoints(Math.floor(confirmed))
-      setPendingPoints(0)
+       ])
+       const confirmed = memberRow?.effective_points ?? 0
+       setConfirmedPoints(Math.floor(confirmed))
+       setPendingPoints(0)
 
-      const activeNext = Array.isArray(joinedRows)
-        ? joinedRows
+       const activeNext = Array.isArray(joinedRows)
+         ? joinedRows
             .filter((r: any) => r.active === true)
             .map((r: any) => r.event)
-        : []
+         : []
 
-      const joinedIds = new Set(activeNext.map((e: any) => e.id))
+       const joinedIds = new Set(activeNext.map((e: any) => e.id))
         
-      // ADD THIS: Set streak state
-      if (streakData) {
-        setUserStreak({
-          currentMonth: streakData.current_streak_month || 0,
-          totalSpots: 0,
-          tier: getTierInfo(streakData.current_streak_month || 0),
-          lastContributionMonth: streakData.last_contribution_month
-        })
-      }
-    console.log('Streak data loaded:', streakData)
-    console.log('dismissedLeaderboardTip:', dismissedLeaderboardTip)
-    console.log('localStorage value:', localStorage.getItem('dismissedLeaderboardTip'))
+       // ADD THIS: Set streak state
+       if (streakData) {
+         setUserStreak({
+           currentMonth: streakData.current_streak_month || 0,
+           totalSpots: 0,
+           tier: getTierInfo(streakData.current_streak_month || 0),
+           lastContributionMonth: streakData.last_contribution_month
+          })
+        }
+     console.log('Streak data loaded:', streakData)
+     console.log('dismissedLeaderboardTip:', dismissedLeaderboardTip)
+     console.log('localStorage value:', localStorage.getItem('dismissedLeaderboardTip'))
     
       const { data: openEvents } = await supabase
         .from('events')
@@ -331,11 +331,12 @@ export default function Dashboard() {
       setSuggested(suggestedEvents)
       setTotalSlots(tSlots)
       setAvailableSlots(avail)
-  
+      
+    }
      catch (err) {
       console.error('Error loading dashboard:', err)
       setErrorMessage('Failed to load dashboard. Please refresh.')
-     finally {
+     } finally {
       setLoading(false)
     }
    console.log('🔍 Dashboard component rendering')
