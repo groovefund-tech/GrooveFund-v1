@@ -76,7 +76,10 @@ export default function Dashboard() {
     return false
  })
 
-  
+  const joinedIds = (nextGrooves ?? []).map((e: any) => e.id)
+  const slotsAfter = Math.floor((confirmedPoints + topUpAmount) / 500)
+  const userInitial = member?.display_name?.charAt(0).toUpperCase() || 'U'
+
   
  const isTopMember = member?.rank && member.rank <= 40
    
@@ -351,11 +354,6 @@ export default function Dashboard() {
 
   if (loading) return <div style={{ padding: 32 }}>Loading Your Grooves…</div>
   if (!member) return <div style={{ padding: 32 }}>No member record.</div>
-
-  const joinedIds = (nextGrooves ?? []).map((e: any) => e.id)
-  const slotsAfter = Math.floor((confirmedPoints + topUpAmount) / 500)
-  const userInitial = member?.display_name?.charAt(0).toUpperCase() || 'U'
-
 
   const loadDashboard = useCallback(async () => {
     setLoading(true)
