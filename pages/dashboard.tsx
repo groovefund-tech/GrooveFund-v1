@@ -237,7 +237,7 @@ export default function Dashboard() {
       setSuggested(suggestedEvents)
       setTotalSlots(tSlots)
       setAvailableSlots(avail)
-  }
+  
     } catch (err) {
       console.error('Error loading dashboard:', err)
       setErrorMessage('Failed to load dashboard. Please refresh.')
