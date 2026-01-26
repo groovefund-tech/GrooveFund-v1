@@ -157,7 +157,7 @@ export default function Dashboard() {
         setLoading(false)
         return
       }
-    }
+    
       const [
         { data: profileRow },
         { data: memberRow },
@@ -351,7 +351,7 @@ export default function Dashboard() {
       isLoading: false,
     })
   }
-
+}
 
   if (loading) return <div style={{ padding: 32 }}>Loading Your Grooves…</div>
   if (!member) return <div style={{ padding: 32 }}>No member record.</div>
