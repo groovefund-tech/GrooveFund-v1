@@ -241,7 +241,7 @@ export default function Dashboard() {
      catch (err) {
       console.error('Error loading dashboard:', err)
       setErrorMessage('Failed to load dashboard. Please refresh.')
-    } finally {
+     finally {
       setLoading(false)
     }
    console.log('🔍 Dashboard component rendering')
