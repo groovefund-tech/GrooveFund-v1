@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 
-function TermsAccordion({ title, emoji, description, details, items }: { title: string; emoji: string; description: string; details: string; items: any[] }) {
+function TermsAccordion({ title, emoji, description, details, items }: { title: string; emoji: string; description: string; details?: string; items?: Array<{ key: string; value: string }> }) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
