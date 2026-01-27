@@ -87,8 +87,8 @@ export default function Terms() {
         </section>
 
         <section style={{ maxWidth: '900px', margin: '0 auto', display: 'grid', gap: '12px', marginBottom: '64px' }}>
-          {sections.map((section, idx) => (
-            <TermsAccordion key={idx} title={section.title} emoji={section.emoji} description={section.description} details={section.details} items={section.items} />
+         {sections?.map((section, idx) => (
+  <TermsAccordion key={idx} title={section?.title} emoji={section?.emoji} description={section?.description} details={section?.details} items={section?.items} />
           ))}
         </section>
 
