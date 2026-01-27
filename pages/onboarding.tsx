@@ -88,7 +88,6 @@ export default function Onboarding() {
           phone: phone,
           dob: new Date(dob).getTime(),
           id_number: idNumber,
-          dob: typeof dob === 'string' ? dob : String(dob),
           residential_address: address,
           email: email,
           monthly_contribution: parseInt(monthlyAmount),
