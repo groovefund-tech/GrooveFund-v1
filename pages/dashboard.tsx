@@ -844,7 +844,7 @@ export default function Dashboard() {
                    <button onClick={() => handleTopUp(topUpAmount) } className="btn-primary" style={{ flex: 1, fontSize: '13px', padding: '10px' }}>Add Groove Balance</button>       
               </div>
             </div>
-          )}
+          )}}
            
             <div style={{ position: 'fixed', top: 60, right: 24, zIndex: 50 }}>
            
