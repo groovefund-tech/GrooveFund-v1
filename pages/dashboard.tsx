@@ -69,9 +69,6 @@ export default function Dashboard() {
     }
   }
 
-  useEffect(() => {
-    checkProfile()
-  }, [])
 
   const [dismissedLeaderboardTip, setDismissedLeaderboardTip] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -206,11 +203,7 @@ export default function Dashboard() {
     return null
   }
 
-  useEffect(() => {
-    console.log('🔍 Component mounted, about to call loadPoolMetrics')
-    loadPoolMetrics()
-  }, [])
-
+ 
   const loadPoolMetrics = async () => {
     try {
       const { data: paymentData, error: paymentError } = await supabase
@@ -479,8 +472,11 @@ export default function Dashboard() {
     })
   }
 
-  if (loading) return <div style={{ padding: 32 }}>Loading Your Grooves…</div>
-  if (!member) return <div style={{ padding: 32 }}>No member record.</div>
+
+
+  useEffect(() => {
+    checkProfile()
+  }, [])
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -495,9 +491,17 @@ export default function Dashboard() {
     checkAuth()
   }, [])
 
+ useEffect(() => {
+    console.log('🔍 Component mounted, about to call loadPoolMetrics')
+    loadPoolMetrics()
+  }, [])
+
   useEffect(() => {
     if (authReady) loadDashboard()
   }, [authReady, loadDashboard])
+
+  if (loading) return <div style={{ padding: 32 }}>Loading Your Grooves…</div>
+  if (!member) return <div style={{ padding: 32 }}>No member record.</div>
 
   return (
     <>
