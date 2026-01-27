@@ -250,7 +250,7 @@ export default function Dashboard() {
     window.location.reload()
   }
 
-  const loadDashboard = async () => {
+  const loadDashboard = useCallback(async () => {
     setLoading(true)
     setErrorMessage(null)
     try {
@@ -259,7 +259,7 @@ export default function Dashboard() {
       if (!user) {
         setLoading(false)
         return
-      }
+      } , [])
 
       const [
         { data: profileRow },
@@ -492,7 +492,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (authReady) loadDashboard()
-  }, [authReady])
+  }, [authReady, loadDashboard])
 
   return (
     <>
