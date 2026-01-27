@@ -11,7 +11,7 @@ function generateReferralCode(displayName: string): string {
   return `${namePrefix}${yearSuffix}`.slice(0, 8)
 }
 
-function RuleAccordion({ title, content }) {
+function RuleAccordion({ title, content }: { title: string; content: string }) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div onClick={() => setIsOpen(!isOpen)} style={{ background: isOpen ? 'linear-gradient(135deg, #FFF5ED 0%, #FFFFFF 100%)' : 'white', border: isOpen ? '2px solid #FF751F' : '1px solid #E5E7EB', borderRadius: '12px', padding: '20px', cursor: 'pointer', transition: 'all 0.3s ease', boxShadow: isOpen ? '0 8px 24px rgba(255, 117, 31, 0.1)' : '0 2px 8px rgba(0, 0, 0, 0.05)', }} onMouseEnter={(e) => { if (!isOpen) { e.currentTarget.style.borderColor = '#FF751F'; e.currentTarget.style.background = '#FFF5ED'; } }} onMouseLeave={(e) => { if (!isOpen) { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.background = 'white'; } }} >
