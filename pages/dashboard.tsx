@@ -895,13 +895,14 @@ export default function Dashboard() {
                 <div key={notif.id} style={{ fontSize: '12px', color: '#991B1B', marginBottom: '6px', padding: '8px', background: 'white', borderRadius: '6px' }}>
                     <strong>{notif.action}:</strong> {notif.details}
                 </div>
+               </>
                 ))}
             </div>
             )}
         </div>
       </div>
           })}
-    </>
+   
   )
 }
       
