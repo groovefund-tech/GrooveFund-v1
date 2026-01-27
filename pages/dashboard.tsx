@@ -37,11 +37,16 @@ export default function Dashboard() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   
   const [adminNotifications, setAdminNotifications] = useState([])
-  const [userStreak, setUserStreak] = useState({
-    currentMonth: 0, // consecutive months
-    totalSpots: 0, // total spots unlocked
+  const [userStreak, setUserStreak] = useState<{
+    currentMonth: number
+    totalSpots: number
+    tier: any  // Allow null or object
+    lastContributionMonth: string
+    }>({
+    currentMonth: 0,
+    totalSpots: 0,
     tier: null,
-    lastContributionMonth: new Date().toISOString().slice(0, 7) // YYYY-MM
+    lastContributionMonth: new Date().toISOString().slice(0, 7)
     })
   const [totalPoolAmount, setTotalPoolAmount] = useState(0)
   const [totalTicketsPurchased, setTotalTicketsPurchased] = useState(0)
