@@ -87,7 +87,7 @@ export default function Dashboard() {
    const isInTop40Badge = member?.effective_points >= 500 && member.rank <= top40Threshold
 
 
-  const handleTopUp = async (amount: number) => {
+  const handleTopUp = async () => {  // ← Remove the parameter
     if (!topUpAmount || !member?.user_id) {
       setErrorMessage('Please enter an amount')
       return
