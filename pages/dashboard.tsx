@@ -252,6 +252,11 @@ export default function Dashboard() {
 
   const loadDashboard = useCallback(async () => {
     setLoading(true)
+    console.log('🔍 loadDashboard started')
+    setLoading(true)
+    console.log('🔍 About to fetch profile...')
+    const [ { data: profileRow }, ... ] = await Promise.all([...])
+    console.log('🔍 Fetched data, now processing...')
     setErrorMessage(null)
     try {
       const { data: { session } } = await supabase.auth.getSession()
