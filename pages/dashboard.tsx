@@ -256,9 +256,9 @@ export default function Dashboard() {
       const user = session?.user
       if (!user) {
         setLoading(false)
-        return
-      } , [])
-
+         } , [])
+        return }
+     
       const [
         { data: profileRow },
         { data: memberRow },
