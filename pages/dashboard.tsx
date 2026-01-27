@@ -302,7 +302,7 @@ export default function Dashboard() {
             .filter((r: any) => r.active === true)
             .map((r: any) => r.event)
         : []
-      const joinedIds = new Set(activeNext.map((e: any) => e.id))
+      const joinedIdsSet = new Set(activeNext.map((e: any) => e.id))
 
       if (streakData) {
         setUserStreak({
