@@ -88,16 +88,15 @@ export default function Terms() {
 
         <section style={{ maxWidth: '900px', margin: '0 auto', display: 'grid', gap: '12px', marginBottom: '64px' }}>
          {sections?.map((section, idx) => (
-            {section && (
-            <TermsAccordion 
-              key={idx} 
-              title={section.title || ''} 
-              emoji={section.emoji || ''} 
-              description={section.description || ''} 
-              details={section.details} 
-              items={section.items} 
+            <TermsAccordion
+              key={idx}
+              title={section.title || ''}
+              emoji={section.emoji || ''}
+              description={section.description || ''}
+              details={section.details}
+              items={section.items}
             />
-          )}
+          ))}
         </section>
 
         <section style={{ background: 'linear-gradient(135deg, #FFF5ED 0%, #FFFFFF 100%)', border: '2px solid #FF751F', borderRadius: '16px', padding: '32px', textAlign: 'center', marginBottom: '64px' }}>
