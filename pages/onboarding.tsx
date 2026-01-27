@@ -403,7 +403,7 @@ export default function Onboarding() {
                   { emoji: '🌟', title: 'Exclusive Events', desc: 'VIP access to GrooveFund member events' },
                 ].map((item, i) => (
                   <div key={i} style={{ background: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FF 100%)', padding: 24, borderRadius: 16, border: '2px solid #BFDBFE', cursor: 'pointer', transition: 'all 0.3s ease', position: 'relative', overflow: 'hidden', }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(31, 41, 55, 0.12)'; e.currentTarget.style.borderColor = '#FF751F'; const icon = e.currentTarget.querySelector('[data-benefit-icon]') as HTMLElement; if (icon) { icon.style.transform = 'scale(1.15) rotate(5deg)' } }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.05)'; e.currentTarget.style.borderColor = '#BFDBFE'; const icon = e.currentTarget.querySelector('[data-benefit-icon]') as HTMLElement; if (icon) { icon.style.transform = 'scale(1) rotate(0deg)' } }} >
-                    <div style={{ fontSize: 40, marginBottom: 12, display: 'inline-block' }} data-benefit-icon style={{ fontSize: 40, marginBottom: 12, display: 'inline-block', transition: 'all 0.3s ease', }}>
+                   <div style={{ fontSize: 40, marginBottom: 12, display: 'inline-block', transition: 'all 0.3s ease' }} data-benefit-icon>
                       {item.emoji}
                     </div>
                     <div style={{ fontSize: 16, fontWeight: 600, color: '#1F2937', marginBottom: 8 }}>
