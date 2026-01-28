@@ -528,11 +528,36 @@ export default function Dashboard() {
             {!dismissedLeaderboardTip && (
             <div style={{ padding: '12px 16px', background: '#FFF5ED', borderRadius: '12px', border: '1px solid #FFE4CC', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
                 <div style={{ fontSize: '12px', color: '#6B7280', lineHeight: '1.5', flex: 1 }}>
-                <strong style={{ color: '#FF751F', display: 'block', marginBottom: '4px' }}>📊 Welcome To The GrooveFund Community!</strong>
-                How it works: Build your Groove Balance by Locking In your Grooves. 1 spot = 500 points. Your place on the Leaderboard is final every 29th, 12pm. Top 40% Groovers are issued tickets at the end of the month. The higher your Groove Balance, the higher you climb. Only Groovers with 1 and more spots qualify for the Top 40%.
-                When we issue a ticket to you = -495 points. The next tickets are then bought at the end of the next month. Dates may change so keep notifications open! Your Groove Streak is separate, it tracks your monthly consistency to unlock special perks - did someone say VIP tickets?! Haha, enough with the boring stuff, your journey starts NOW!
-                
-                Keep Grooving, Keep Climbing! 🚀
+                <strong style={{ color: '#FF751F', display: 'block', marginBottom: '4px' }}>🎵 Welcome To The GrooveFund Community!</strong>
+                  HOW IT WORKS
+                  
+                  1 spot = 500 points = R500 contribution.
+                  Top 40% Groovers win rewards every month (leaderboard finalizes 29th, 12pm).
+                  
+                  WHAT YOU WIN
+                  
+                  🎤 Concerts: Top 40% contributors get their chosen concert tickets (when available)
+                  🍽️ Groove Table: Top 40% win their chosen R750 restaurant vouchers (every month), vouchers valid for 6-12 months after date of purchase.
+                  No shows forfeit.
+
+                  WHAT YOU HAVE TO DO
+                  
+                  Book your spot before the 29th!!
+                  If you dont get tickets/vouchers this month, your points carry over to the next month.
+                  If you dont book your spot, we won't know which tickets to get you.
+                  
+                  YOUR GROOVE STREAK
+                  
+                  Tracks your consistency. More streaks = more perks.
+                  
+                  THE FINE PRINT
+                  
+                  - Concert tickets bought at market price (dates may shift—keep notifications on!)
+                  - Restaurant vouchers: You book your own table (we send details + voucher code only)
+                  - Some restaurants have blackout dates (Valentine's, NYE, etc.)
+                  - Contributions are non-refundable once locked in (but you can withdraw Groove Balance before the 29th)
+                  
+                  Keep Grooving, Keep Climbing! 🚀 🚀
                 </div>
                 <button 
                 onClick={() => {
