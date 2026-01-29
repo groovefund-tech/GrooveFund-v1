@@ -871,7 +871,7 @@ export default function Leaderboard() {
               }}
             >
               <strong style={{ color: '#1F2937' }}>💡 How it works:</strong> Your final rank updates every 29th at
-              12pm. Top 40% members qualify for monthly tickets. Build your
+              12pm. Top 40% members (of those with 500+ points) qualify for monthly tickets. Build your
               Groove Balance by locking in events, and watch your streak grow!
             </p>
           </div>
