@@ -532,7 +532,7 @@ export default function Dashboard() {
                   HOW IT WORKS
                   
                   1 spot = 500 points = R500 contribution.
-                  Top 40% Groovers win rewards every month (leaderboard finalizes 29th, 12pm).
+                  Top 40% Groovers (with 500+ points) win rewards every month (leaderboard finalizes 29th, 12pm).
                   
                   WHAT YOU WIN
                   
