@@ -25,7 +25,7 @@ export default function Dashboard() {
   const [topUpAmount, setTopUpAmount] = useState<number>(0)
   const [backfillAmount, setBackfillAmount] = useState(500)
   const [showProfileModal, setShowProfileModal] = useState(false)
-  const [newDisplayName, setNewDisplayName] = useState(member?.display_name ?? '')
+  const [newDisplayName, setNewDisplayName] = useState('')
   const [authReady, setAuthReady] = useState(false)
   const [profileError, setProfileError] = useState<string | null>(null)
   const [isLoadingProfile, setIsLoadingProfile] = useState(true)
@@ -108,8 +108,8 @@ export default function Dashboard() {
    const isInTop40Badge = member?.effective_points >= 500 && member.rank <= top40Threshold
 
 
-  const handleTopUp = async (amount: number) => {
-    if (!topUpAmount || !member?.user_id) {
+  const handleTopUp = async () => {
+    if (!topUpAmount || !member?.user_id) {  // Use state variable
       setErrorMessage('Please enter an amount')
       return
     }
@@ -143,120 +143,8 @@ export default function Dashboard() {
 
   {/* Calculate top 40% OUTSIDE the JSX */}
   
-  const toggleEvent = (eventId: string) => {
-    setExpandedEventId((prev) => (prev === eventId ? null : eventId))
-  }
 
-  const loadDashboard = async () => {
-    setLoading(true)
-    setErrorMessage(null)
-     }
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const user = session?.user
-
-      if (!user) {
-        setLoading(false)
-        return
-      }
-
-      const [
-        { data: profileRow },
-        { data: memberRow },
-        { data: leaderboardRows },
-        { data: joinedRows },
-        { data: streakData } ,
-      ] = await Promise.all([
-        supabase
-          .from('profiles')
-          .select('id, monthly_slots_used')
-          .eq('user_id', user.id)
-          .single(),
-        supabase
-          .from('leaderboard_view')
-          .select('*')
-          .eq('user_id', user.id)
-          .single(),
-        supabase
-          .from('leaderboard_view')
-          .select('*')
-          .order('rank', { ascending: true })
-          .limit(10),
-        supabase
-          .from('event_members')
-          .select('event:events(*), ticket_issued, active')
-          .eq('user_id', user.id)
-          .eq('active', true),
-         supabase
-          .from('profiles')
-          .select('current_streak_month, streak_tier, last_contribution_month')
-          .eq('id', user.id)
-          .single() 
-      ])
-     
-      const confirmed = memberRow?.effective_points ?? 0
-      setConfirmedPoints(Math.floor(confirmed))
-      setPendingPoints(0)
-
-      const activeNext = Array.isArray(joinedRows)
-        ? joinedRows
-            .filter((r: any) => r.active === true)
-            .map((r: any) => r.event)
-        : []
-
-      const joinedIds = new Set(activeNext.map((e: any) => e.id))
-        
-      // ADD THIS: Set streak state
-      if (streakData) {
-        setUserStreak({
-          currentMonth: streakData.current_streak_month || 0,
-          totalSpots: 0,
-          tier: getTierInfo(streakData.current_streak_month || 0),
-          lastContributionMonth: streakData.last_contribution_month
-        })
-      }
-    console.log('Streak data loaded:', streakData)
-    console.log('dismissedLeaderboardTip:', dismissedLeaderboardTip)
-    console.log('localStorage value:', localStorage.getItem('dismissedLeaderboardTip'))
-
-      const { data: openEvents } = await supabase
-        .from('events')
-        .select('*, event_members(count)')
-        .eq('status', 'open')
-
-      const suggestedEvents = (openEvents ?? []).filter(
-        (e: any) => !joinedIds.has(e.id)
-      )
-
-      const tSlots = Math.floor(confirmed / 500)
-      // Calculate actual slots used by summing slot_cost from all active events
-      const slotsUsed = activeNext.reduce((sum, event) => {
-        return sum + (event.slot_cost || 1)
-      }, 0)
-      const avail = Math.max(0, tSlots - slotsUsed)  // ✅ CORRECT
-
-      setMember({
-        ...memberRow,
-        monthly_slots_used: profileRow?.monthly_slots_used,
-      })
-      setLeaderboard(leaderboardRows ?? [])
-      setNextGrooves(activeNext)
-      setSuggested(suggestedEvents)
-      setTotalSlots(tSlots)
-      setAvailableSlots(avail)
-
-    } catch (err) {
-      console.error('Error loading dashboard:', err)
-      setErrorMessage('Failed to load dashboard. Please refresh.')
-    } finally {
-      setLoading(false)
-    }
-   console.log('🔍 Dashboard component rendering')
-   console.log('🔍 Supabase client:', supabase)
-
-  }
-
+ 
   const applyAdminPayment = async () => {
     if (!member?.user_id) return
     try {
@@ -363,6 +251,48 @@ export default function Dashboard() {
   const userInitial = member?.display_name?.charAt(0).toUpperCase() || 'U'
 
 
+ 
+  const getTierInfo = (consecutiveMonths: number) => {
+  if (consecutiveMonths >= 24) return { 
+    name: 'Stokvel Legend', 
+    emoji: '💎', 
+    color: '#7C3AED',
+    description: "You're legendary. 24 months of pure momentum."
+  }
+  if (consecutiveMonths >= 12) return { 
+    name: 'Stokvel Guardian', 
+    emoji: '💎', 
+    color: '#FF751F',
+    description: "You're a force. A year of commitment unlocked."
+  }
+  if (consecutiveMonths >= 6) return { 
+    name: 'Stokvel Champion', 
+    emoji: '🥇', 
+    color: '#F59E0B',
+    description: "You're unstoppable. Your dedication is showing."
+  }
+  if (consecutiveMonths >= 3) return { 
+    name: 'Stokvel Builder', 
+    emoji: '🥈', 
+    color: '#9CA3AF',
+    description: "You're proving consistency matters. Keep the rhythm going."
+  }
+  if (consecutiveMonths >= 1) return { 
+    name: 'Stokvel Starter', 
+    emoji: '🥉', 
+    color: '#B45309',
+    description: "You've started. You're building the foundation."
+  }
+  return null
+}
+
+    const checkStreakMilestone = (months: number) => {
+    if (months === 3) return "🚀 Stokvel Builder unlocked! Your consistency is paying off. Keep pushing."
+    if (months === 6) return "🚀 Stokvel Champion unlocked! You're on fire. Keep the momentum going."
+    if (months === 12) return "🚀 Stokvel Guardian unlocked! A year of pure dedication."
+    if (months === 24) return "🚀 Stokvel Legend unlocked! You're a community pillar."
+    return null
+    }
   const loadDashboard = useCallback(async () => {
     setLoading(true)
     setErrorMessage(null)
@@ -472,48 +402,6 @@ export default function Dashboard() {
 
   }, [router])
   
-  const getTierInfo = (consecutiveMonths: number) => {
-  if (consecutiveMonths >= 24) return { 
-    name: 'Stokvel Legend', 
-    emoji: '💎', 
-    color: '#7C3AED',
-    description: "You're legendary. 24 months of pure momentum."
-  }
-  if (consecutiveMonths >= 12) return { 
-    name: 'Stokvel Guardian', 
-    emoji: '💎', 
-    color: '#FF751F',
-    description: "You're a force. A year of commitment unlocked."
-  }
-  if (consecutiveMonths >= 6) return { 
-    name: 'Stokvel Champion', 
-    emoji: '🥇', 
-    color: '#F59E0B',
-    description: "You're unstoppable. Your dedication is showing."
-  }
-  if (consecutiveMonths >= 3) return { 
-    name: 'Stokvel Builder', 
-    emoji: '🥈', 
-    color: '#9CA3AF',
-    description: "You're proving consistency matters. Keep the rhythm going."
-  }
-  if (consecutiveMonths >= 1) return { 
-    name: 'Stokvel Starter', 
-    emoji: '🥉', 
-    color: '#B45309',
-    description: "You've started. You're building the foundation."
-  }
-  return null
-}
-
-    const checkStreakMilestone = (months: number) => {
-    if (months === 3) return "🚀 Stokvel Builder unlocked! Your consistency is paying off. Keep pushing."
-    if (months === 6) return "🚀 Stokvel Champion unlocked! You're on fire. Keep the momentum going."
-    if (months === 12) return "🚀 Stokvel Guardian unlocked! A year of pure dedication."
-    if (months === 24) return "🚀 Stokvel Legend unlocked! You're a community pillar."
-    return null
-    }
-
       // After successful spot unlock:
 
     useEffect(() => {
@@ -573,7 +461,11 @@ export default function Dashboard() {
   }, [])
 
   useEffect(() => { if (authReady) loadDashboard() }, [authReady, loadDashboard])
-  
+  useEffect(() => {
+    if (member?.display_name) {
+      setNewDisplayName(member.display_name)
+    }
+  }, [member])
 
   return (
     <>
@@ -958,7 +850,7 @@ export default function Dashboard() {
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button onClick={() => setShowTopUp(false)} className="btn-secondary" style={{ flex: 1, fontSize: '13px', padding: '10px' }}>Cancel</button>
-                   <button onClick={() => handleTopUp(amount) } className="btn-primary" style={{ flex: 1, fontSize: '13px', padding: '10px' }}>Add Groove Balance</button>       
+                   <button onClick={handleTopUp} className="btn-primary" style={{ flex: 1, fontSize: '13px', padding: '10px' }}>Add Groove Balance</button>       
               </div>
             </div>
           )}
