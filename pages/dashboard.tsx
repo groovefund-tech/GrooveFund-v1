@@ -66,7 +66,7 @@ export default function Dashboard() {
     checkProfile()
   }, [])
       
-  const toggleEvent = (eventId: string) => {
+  const handleToggleEvent = (eventId: string) => {
     setExpandedEventId((prev) => (prev === eventId ? null : eventId))
   }
 
