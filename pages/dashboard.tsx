@@ -141,7 +141,6 @@ export default function Dashboard() {
     }
   }
 
-  {/* Calculate top 40% OUTSIDE the JSX */}
   
 
  
