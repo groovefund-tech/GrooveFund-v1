@@ -5,6 +5,18 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import dynamic from 'next/dynamic'
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+const isTablet = typeof window !== 'undefined' && window.innerWidth < 1024;
+
+// Responsive style helpers
+const getResponsiveStyles = {
+  headerGap: isMobile ? 8 : 20,
+  sectionPadding: isMobile ? '40px 16px' : '80px 20px',
+  featureCardPadding: isMobile ? 16 : 20,
+  heroFontSize: isMobile ? 32 : 48,
+  heroSubtitleFontSize: isMobile ? 14 : 18,
+};
+
 function RuleAccordion({ title, content }: { title: string; content: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -330,15 +342,14 @@ export default function Home() {
         {/* HEADER */}
         <header
           style={{
+            maxWidth: 1200,
+            margin: '0 auto',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '24px 20px',
-            borderBottom: '1px solid #E5E7EB',
-            background: 'white',
-            position: 'sticky',
-            top: 0,
-            zIndex: 40,
+            width: '100%'
+            gap: isMobile ? 8 : 20
+           
           }}
         >
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: 20 }}>
@@ -347,10 +358,10 @@ export default function Home() {
               alt="GrooveFund - Concert Stokvel"
               width={120}
               height={40}
-              style={{ cursor: 'pointer', width: 'auto', height: '32px' }}
+              style={{ width: 'auto', height: isMobile ? '24px' : '32px' }}
               onClick={() => router.push('/')}
             />
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ display: 'flex', gap: isMobile ? '8px' : '12px' }}>
               <button
                 onClick={() => router.push('/login')}
                 style={{
@@ -429,12 +440,7 @@ export default function Home() {
               }}>🎵</div>
               
               <h1 style={{
-                fontSize: 48,
-                fontWeight: 700,
-                color: 'white', // Changed to white for contrast
-                margin: '0 0 16px 0',
-                lineHeight: 1.1,
-                textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)', // Add text shadow for readability
+                fontSize: isMobile ? 32 : isTablet ? 40 : 48, fontWeight: 700, color: 'white', margin: '0 0 16px 0', lineHeight: 1.1, textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)', // Add text shadow for readability
               }}>
                 South Africa's first concert stokvel.
               </h1>
@@ -481,7 +487,7 @@ export default function Home() {
           {/* FEATURES SECTION */}
           <section style={{ padding: '60px 20px', background: 'white' }}>
             <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 48 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : 'repeat(3, 1fr), gap: 16, marginBottom: 48 }}>
                 {[
                   { icon: '💰', title: 'Save Monthly', subtitle: 'EFT or YOCO' },
                   { icon: '🔥', title: 'Build Streaks', subtitle: 'Stay Consistent' },
@@ -608,7 +614,7 @@ export default function Home() {
                       alignItems: 'flex-start',
                     }}
                   >
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '80px 1fr', gap: isMobile ? 16 : 24, alignItems: isMobile ? 'center' : 'flex-start' }}>
                       <div
                         style={{
                           width: 80,
