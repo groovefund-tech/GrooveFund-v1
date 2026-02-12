@@ -881,7 +881,7 @@ export default function Home() {
                     step: '04',
                     icon: '🎵',
                     title: 'Groove Together',
-                    desc: 'Connect with hunderds of Groovers at unforgettable events. Build a community that celebrates together.',
+                    desc: 'Connect with hundreds of Groovers at unforgettable events. Build a community that celebrates together.',
                   },
                 ].map((item, i) => (
                   <div
@@ -1080,6 +1080,9 @@ export default function Home() {
                     </div>
                     <p
                       style={{
+                        fontSize: isMobile ?
+                          <p
+                      style={{
                         fontSize: isMobile ? 12 : 14,
                         color: '#6B7280',
                         margin: 0,
@@ -1093,7 +1096,7 @@ export default function Home() {
             </div>
           </section>
 
-         {/* RULES & TRANSPARENCY SECTION */}
+          {/* RULES & TRANSPARENCY SECTION */}
           <section
             style={{
               padding: styles.sectionPadding,
@@ -1377,7 +1380,6 @@ export default function Home() {
                   fontWeight: 700,
                   color: 'white',
                   marginBottom: 16,
-                  margin: isMobile ? '0 0 16px 0' : '0 0 16px 0',
                 }}
               >
                 Ready to Start Grooving? 🚀
@@ -1387,8 +1389,7 @@ export default function Home() {
                 style={{
                   fontSize: styles.ctaSubtitleFontSize,
                   color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: 32,
-                  margin: isMobile ? '0 0 24px 0' : '0 0 32px 0',
+                  marginBottom: isMobile ? 24 : 32,
                 }}
               >
                 Join Hundreds of South Africans saving for unforgettable
