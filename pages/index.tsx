@@ -105,7 +105,7 @@ export default function Home() {
   }, []);
 
   const handleGetStarted = () => {
-    router.push('/signup');
+    router.push('/sign-up-phone');
   };
 
   // Responsive style values
@@ -298,7 +298,7 @@ export default function Home() {
                 '@type': 'ListItem',
                 position: 2,
                 name: 'Get Started',
-                item: 'https://groovefund.co.za/signup',
+                item: 'https://groovefund.co.za/sign-up-phone',
               },
               {
                 '@type': 'ListItem',
