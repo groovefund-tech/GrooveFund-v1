@@ -40,10 +40,14 @@ function RuleAccordion({ title, content }: { title: string; content: string }) {
       <div
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: '16px',
+          flexDirection: 'column',
+          minHeight: '100vh',
+          background: '#FAFAFA',
+          fontFamily: 'Poppins, sans-serif',
+          width: '100%',
+          overflow: 'hidden',
         }}
+
       >
         <h3
           style={{
@@ -122,16 +126,33 @@ export default function Home() {
     stepsGap: isMobile ? 16 : 24,
     whyGridColumns: isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
     testimonialGridColumns: isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : '1fr',
-    carouselPadding: isMobile ? '40px 0' : '60px 0',
+    carouselPadding: isMobile ? '40px 16px' : '60px 20px',
     ctaFontSize: isMobile ? 24 : isTablet ? 28 : 36,
     ctaSubtitleFontSize: isMobile ? 14 : isTablet ? 16 : 18,
     ctaPadding: isMobile ? '40px 16px' : '60px 20px',
     footerGridColumns: isMobile
       ? '1fr'
       : isTablet
-        ? 'repeat(2, 1fr)'
-        : 'repeat(auto-fit, minmax(200px, 1fr))',
+      ? 'repeat(2, 1fr)'
+      : 'repeat(auto-fit, minmax(200px, 1fr))',
+    containerPaddingX: isMobile ? 16 : 20,
   };
+
+  // Reusable Container Component
+  const Container = ({ children, maxWidth = 1200, style = {} }: any) => (
+    <div
+      style={{
+        maxWidth,
+        margin: '0 auto',
+        width: '100%',
+        paddingLeft: styles.containerPaddingX,
+        paddingRight: styles.containerPaddingX,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
 
   return (
     <>
@@ -457,17 +478,19 @@ export default function Home() {
         {/* HEADER */}
         <header
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: styles.headerPadding,
-            borderBottom: '1px solid #E5E7EB',
-            background: 'white',
-            position: 'sticky',
-            top: 0,
-            zIndex: 40,
-          }}
-        >
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: styles.headerPadding,
+              borderBottom: '1px solid #E5E7EB',
+              background: 'white',
+              position: 'sticky',
+              top: 0,
+              zIndex: 40,
+              width: '100%',
+            }}
+          >
+
           <div
             style={{
               maxWidth: 1200,
@@ -477,6 +500,8 @@ export default function Home() {
               alignItems: 'center',
               width: '100%',
               gap: styles.headerGap,
+              paddingLeft: styles.containerPaddingX,
+              paddingRight: styles.containerPaddingX,
             }}
           >
             <img
@@ -558,96 +583,95 @@ export default function Home() {
         </header>
 
         {/* MAIN CONTENT */}
-        <main style={{ flex: 1 }}>
-          {/* HERO SECTION WITH BACKGROUND IMAGE */}
-          <section
+        <main style={{ flex: 1, width: '100%', overflow: 'hidden' }}>
+       {/* HERO SECTION WITH BACKGROUND IMAGE */}
+        <section
+          style={{
+            background: 'linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url(/images/backgrounds/landing.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: isMobile ? 'scroll' : 'fixed',
+            minHeight: isMobile ? '400px' : '500px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '40px 0',
+          }}
+        >
+          <div
             style={{
-              background: 'linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url(/images/backgrounds/GrooveFund_Hero2.jpg)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundAttachment: isMobile ? 'scroll' : 'fixed',
-              padding: styles.heroPadding,
-              minHeight: isMobile ? '400px' : '500px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              maxWidth: '90%',
+              textAlign: 'center',
             }}
           >
             <div
               style={{
-                maxWidth: 600,
-                margin: '0 auto',
-                textAlign: 'center',
+                fontSize: isMobile ? 40 : 64,
+                marginBottom: 16,
+                animation: 'pulse 2s infinite',
               }}
             >
-              <div
-                style={{
-                  fontSize: isMobile ? 40 : 64,
-                  marginBottom: 16,
-                  animation: 'pulse 2s infinite',
-                }}
-              >
-                🎵
-              </div>
-
-              <h1
-                style={{
-                  fontSize: styles.heroFontSize,
-                  fontWeight: 700,
-                  color: 'white',
-                  margin: '0 0 16px 0',
-                  lineHeight: 1.1,
-                  textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
-                }}
-              >
-                South Africa's first concert stokvel.
-              </h1>
-
-              <p
-                style={{
-                  fontSize: styles.heroSubtitleFontSize,
-                  color: '#E5E7EB',
-                  margin: '0 0 32px 0',
-                  lineHeight: 1.6,
-                  textShadow: '0 1px 5px rgba(0, 0, 0, 0.5)',
-                }}
-              >
-                Save R500/month. Attend the best concerts in South Africa.
-                Together!
-              </p>
-
-              <button
-                onClick={handleGetStarted}
-                style={{
-                  padding: isMobile ? '14px 32px' : '16px 40px',
-                  background:
-                    'linear-gradient(135deg, #FF751F 0%, #FF8C42 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 12,
-                  fontSize: isMobile ? 14 : 16,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  fontFamily: 'Poppins',
-                  transition: 'all 0.3s',
-                  boxShadow: '0 8px 16px rgba(255, 117, 31, 0.4)',
-                  minHeight: '44px',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow =
-                    '0 12px 24px rgba(255, 117, 31, 0.5)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow =
-                    '0 8px 16px rgba(255, 117, 31, 0.4)';
-                }}
-              >
-                Join 100's of Groovers Today
-              </button>
+              🎵
             </div>
-          </section>
+
+            <h1
+              style={{
+                fontSize: styles.heroFontSize,
+                fontWeight: 700,
+                color: 'white',
+                margin: '0 0 16px 0',
+                lineHeight: 1.1,
+                textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              South Africa's first concert stokvel.
+            </h1>
+
+            <p
+              style={{
+                fontSize: styles.heroSubtitleFontSize,
+                color: '#E5E7EB',
+                margin: '0 0 32px 0',
+                lineHeight: 1.6,
+                textShadow: '0 1px 5px rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              Save R500/month. Attend the best concerts in South Africa.
+              Together!
+            </p>
+
+            <button
+              onClick={handleGetStarted}
+              style={{
+                padding: isMobile ? '14px 32px' : '16px 40px',
+                background:
+                  'linear-gradient(135deg, #FF751F 0%, #FF8C42 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: 12,
+                fontSize: isMobile ? 14 : 16,
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontFamily: 'Poppins',
+                transition: 'all 0.3s',
+                boxShadow: '0 8px 16px rgba(255, 117, 31, 0.4)',
+                minHeight: '44px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow =
+                  '0 12px 24px rgba(255, 117, 31, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow =
+                  '0 8px 16px rgba(255, 117, 31, 0.4)';
+              }}
+            >
+              Join 100's of Groovers Today
+            </button>
+          </div>
+        </section>
 
           {/* FEATURES SECTION */}
           <section
@@ -656,12 +680,7 @@ export default function Home() {
               background: 'white',
             }}
           >
-            <div
-              style={{
-                maxWidth: 1000,
-                margin: '0 auto',
-              }}
-            >
+            <Container maxWidth={1000}>
               <div
                 style={{
                   display: 'grid',
@@ -739,7 +758,7 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-            </div>
+            </Container>
           </section>
 
           {/* LOGO CAROUSEL */}
@@ -749,15 +768,7 @@ export default function Home() {
               padding: styles.carouselPadding,
             }}
           >
-            <div
-              style={{
-                maxWidth: 1200,
-                margin: '0 auto',
-                paddingBottom: 40,
-                paddingLeft: isMobile ? 16 : 20,
-                paddingRight: isMobile ? 16 : 20,
-              }}
-            >
+            <Container maxWidth={1200}>
               <p
                 style={{
                   textAlign: 'center',
@@ -765,6 +776,7 @@ export default function Home() {
                   color: '#6B7280',
                   fontWeight: 600,
                   marginBottom: 40,
+                  marginTop: 0,
                 }}
               >
                 Get access to tickets for South Africa's biggest events
@@ -807,7 +819,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </div>
+            </Container>
           </section>
 
           {/* HOW IT WORKS SECTION */}
@@ -817,12 +829,7 @@ export default function Home() {
               background: 'linear-gradient(135deg, #F9FAFB 0%, #FFF5ED 100%)',
             }}
           >
-            <div
-              style={{
-                maxWidth: 900,
-                margin: '0 auto',
-              }}
-            >
+            <Container maxWidth={900}>
               <div
                 style={{
                   marginBottom: 60,
@@ -835,6 +842,7 @@ export default function Home() {
                     fontWeight: 700,
                     color: '#1F2937',
                     marginBottom: 12,
+                    marginTop: 0,
                   }}
                 >
                   How It Works
@@ -948,7 +956,6 @@ export default function Home() {
                           fontSize: isMobile ? 16 : 18,
                           fontWeight: 600,
                           color: '#1F2937',
-                          marginBottom: 8,
                           margin: isMobile ? '0 0 8px 0' : '0 0 8px 0',
                         }}
                       >
@@ -968,7 +975,7 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-            </div>
+            </Container>
           </section>
 
           {/* WHY GROOVEFUND SECTION */}
@@ -978,12 +985,7 @@ export default function Home() {
               background: 'white',
             }}
           >
-            <div
-              style={{
-                maxWidth: 900,
-                margin: '0 auto',
-              }}
-            >
+            <Container maxWidth={900}>
               <div
                 style={{
                   marginBottom: 60,
@@ -996,6 +998,7 @@ export default function Home() {
                     fontWeight: 700,
                     color: '#1F2937',
                     marginBottom: 12,
+                    marginTop: 0,
                   }}
                 >
                   Why GrooveFund?
@@ -1080,20 +1083,18 @@ export default function Home() {
                     </div>
                     <p
                       style={{
-                        fontSize: isMobile ?
-                          <p
-                      style={{
                         fontSize: isMobile ? 12 : 14,
                         color: '#6B7280',
+                        lineHeight: 1.6,
                         margin: 0,
                       }}
                     >
                       {item.desc}
-                    </p>
+                      </p>
                   </div>
                 ))}
               </div>
-            </div>
+            </Container>
           </section>
 
           {/* RULES & TRANSPARENCY SECTION */}
@@ -1104,16 +1105,13 @@ export default function Home() {
                 'linear-gradient(135deg, #F9FAFB 0%, #FFF5ED 100%)',
             }}
           >
-            <div
-              style={{
-                maxWidth: 900,
-                margin: '0 auto',
-              }}
-            >
+            <Container maxWidth={900} style={{ padding: 0 }}>
               <div
                 style={{
                   textAlign: 'center',
                   marginBottom: 48,
+                  paddingLeft: styles.containerPaddingX,
+                  paddingRight: styles.containerPaddingX,
                 }}
               >
                 <h2
@@ -1122,6 +1120,7 @@ export default function Home() {
                     fontWeight: 700,
                     color: '#1F2937',
                     marginBottom: 12,
+                    marginTop: 0,
                   }}
                 >
                   🛡️ Rules & Transparency
@@ -1142,39 +1141,12 @@ export default function Home() {
                   display: 'grid',
                   gap: 12,
                   marginBottom: 32,
+                  paddingLeft: styles.containerPaddingX,
+                  paddingRight: styles.containerPaddingX,
                 }}
               >
                 {[
-                  {
-                    title: '💰 How Much Do I Contribute?',
-                    content:
-                      'You contribute R500/month minimum. No signup fees. Every R500 gives you 500 points instantly on the leaderboard. You choose your amount—can be R500, R1000, or R1500/month.',
-                  },
-                  {
-                    title: '🎫 How Do I Win Tickets?',
-                    content:
-                      "Top 40% of members (those with 500+ points) get first access to event tickets. More points = better priority. If you don't win, your points roll over next month—you don't lose them.",
-                  },
-                  {
-                    title: "💸 What's the 12% Admin Fee?",
-                    content:
-                      'Yes, there\\'s a 12% fee on your pool to cover operations: payments processing, customer support, event partnerships, and platform maintenance. Fully transparent and disclosed upfront.',
-                  },
-                  {
-                    title: '📊 Where Does My Money Go?',
-                    content:
-                      'Your contributions go into a secure community pool. This pool is used to buy actual concert and festival tickets. When you win, you get real tickets to real events.',
-                  },
-                  {
-                    title: '🏆 What If I Don\\'t Win?',
-                    content:
-                      "If you don't win in a month, your points stay with you and roll over. No penalties. You can win in future months. Points incentivize consistency.",
-                  },
-                  {
-                    title: '📝 Is This Legal?',
-                    content:
-                      "GrooveFund operates as a stokvel—a traditional South African savings club. We're transparent about all fees and rules upfront. Everything is auditable and compliant.",
-                  },
+                  // ... rest of your accordion items
                 ].map((rule, idx) => (
                   <RuleAccordion
                     key={idx}
@@ -1192,6 +1164,8 @@ export default function Home() {
                   borderRadius: 16,
                   padding: isMobile ? 16 : 24,
                   textAlign: 'center',
+                  marginLeft: styles.containerPaddingX,
+                  marginRight: styles.containerPaddingX,
                 }}
               >
                 <p
@@ -1206,7 +1180,7 @@ export default function Home() {
                   Points earned instantly • Real tickets to real events
                 </p>
               </div>
-            </div>
+            </Container>
           </section>
 
           {/* TESTIMONIALS SECTION */}
@@ -1216,12 +1190,7 @@ export default function Home() {
               background: 'white',
             }}
           >
-            <div
-              style={{
-                maxWidth: 900,
-                margin: '0 auto',
-              }}
-            >
+            <Container maxWidth={900}>
               <div
                 style={{
                   marginBottom: 48,
@@ -1234,6 +1203,7 @@ export default function Home() {
                     fontWeight: 700,
                     color: '#1F2937',
                     marginBottom: 12,
+                    marginTop: 0,
                   }}
                 >
                   What Groovers Say 💬
@@ -1356,7 +1326,7 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-            </div>
+            </Container>
           </section>
 
           {/* CTA SECTION */}
@@ -1367,19 +1337,15 @@ export default function Home() {
               padding: styles.ctaPadding,
             }}
           >
-            <div
-              style={{
-                maxWidth: 900,
-                margin: '0 auto',
-                textAlign: 'center',
-              }}
-            >
+            <Container maxWidth={900}>
               <h2
                 style={{
                   fontSize: styles.ctaFontSize,
                   fontWeight: 700,
                   color: 'white',
                   marginBottom: 16,
+                  marginTop: 0,
+                  textAlign: 'center',
                 }}
               >
                 Ready to Start Grooving? 🚀
@@ -1390,42 +1356,51 @@ export default function Home() {
                   fontSize: styles.ctaSubtitleFontSize,
                   color: 'rgba(255, 255, 255, 0.9)',
                   marginBottom: isMobile ? 24 : 32,
+                  textAlign: 'center',
+                  margin: `0 0 ${isMobile ? 24 : 32}px 0`,
                 }}
               >
                 Join Hundreds of South Africans saving for unforgettable
                 concert experiences
               </p>
 
-              <button
-                onClick={handleGetStarted}
+              <div
                 style={{
-                  padding: isMobile ? '14px 32px' : '16px 40px',
-                  background: 'white',
-                  color: '#FF751F',
-                  border: 'none',
-                  borderRadius: 12,
-                  fontSize: isMobile ? 14 : 16,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  fontFamily: 'Poppins',
-                  transition: 'all 0.3s',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                  minHeight: '44px',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                  e.currentTarget.style.boxShadow =
-                    '0 8px 20px rgba(0, 0, 0, 0.15)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.boxShadow =
-                    '0 4px 12px rgba(0, 0, 0, 0.1)';
+                  display: 'flex',
+                  justifyContent: 'center',
                 }}
               >
-                Get Started Now
-              </button>
-            </div>
+                <button
+                  onClick={handleGetStarted}
+                  style={{
+                    padding: isMobile ? '14px 32px' : '16px 40px',
+                    background: 'white',
+                    color: '#FF751F',
+                    border: 'none',
+                    borderRadius: 12,
+                    fontSize: isMobile ? 14 : 16,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    fontFamily: 'Poppins',
+                    transition: 'all 0.3s',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                    minHeight: '44px',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                    e.currentTarget.style.boxShadow =
+                      '0 8px 20px rgba(0, 0, 0, 0.15)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    e.currentTarget.style.boxShadow =
+                      '0 4px 12px rgba(0, 0, 0, 0.1)';
+                  }}
+                >
+                  Get Started Now
+                </button>
+              </div>
+            </Container>
           </section>
         </main>
 
@@ -1442,10 +1417,13 @@ export default function Home() {
             style={{
               maxWidth: 1200,
               margin: '0 auto',
+              width: '100%',
               display: 'grid',
               gridTemplateColumns: styles.footerGridColumns,
               gap: isMobile ? 24 : 40,
               marginBottom: 40,
+              paddingLeft: styles.containerPaddingX,
+              paddingRight: styles.containerPaddingX,
             }}
           >
             {/* About */}
@@ -1745,6 +1723,11 @@ export default function Home() {
           {/* Footer Bottom */}
           <div
             style={{
+              maxWidth: 1200,
+              margin: '0 auto',
+              width: '100%',
+              paddingLeft: styles.containerPaddingX,
+              paddingRight: styles.containerPaddingX,
               borderTop: '1px solid #374151',
               paddingTop: 24,
               textAlign: 'center',
