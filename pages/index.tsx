@@ -1146,7 +1146,21 @@ export default function Home() {
                 }}
               >
                 {[
-                  // ... rest of your accordion items
+                  {
+                    title: 'How Much Do I Contribute?',
+                    content:
+                      'You contribute R500/month minimum. No signup fees. Every R500 gives you 500 points instantly.',
+                  },
+                  {
+                    title: 'How Do I Receive Tickets?',
+                    content:
+                      'Top 40% of members (those with 500+ points) get first access to event tickets.',
+                  },
+                  {
+                    title: 'Is This Legal?',
+                    content:
+                      'GrooveFund operates as a stokvel — a traditional South African savings club. Fully transparent and compliant.',
+                  },
                 ].map((rule, idx) => (
                   <RuleAccordion
                     key={idx}
