@@ -5,8 +5,16 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 
-function TermsAccordion({ title, emoji, description, details, items }) {
-  const [isOpen, setIsOpen] = useState(false)
+interface TermsAccordionProps {
+  title: string
+  emoji?: string
+  description?: string
+  details?: string[]
+  items?: string[]
+}
+
+function TermsAccordion({ title, emoji = '', description, details, items }: TermsAccordionProps) {
+  const [isOpen, setIsOpen] = useState<boolean>(false)
 
   return (
     <div onClick={() => setIsOpen(!isOpen)} style={{ background: isOpen ? 'linear-gradient(135deg, #FFF5ED 0%, #FFFFFF 100%)' : 'white', border: isOpen ? '2px solid #FF751F' : '1px solid #E5E7EB', borderRadius: '12px', padding: '20px', cursor: 'pointer', transition: 'all 0.3s ease', boxShadow: isOpen ? '0 8px 24px rgba(255, 117, 31, 0.1)' : '0 2px 8px rgba(0, 0, 0, 0.05)', }} onMouseEnter={(e) => { if (!isOpen) { e.currentTarget.style.borderColor = '#FF751F'; e.currentTarget.style.background = '#FFF5ED'; } }} onMouseLeave={(e) => { if (!isOpen) { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.background = 'white'; } }} >
@@ -81,7 +89,7 @@ export default function Terms() {
           <h1 style={{ fontSize: '48px', fontWeight: 800, color: '#1F2937', margin: '0 0 12px 0', lineHeight: 1.1 }}>
             📋 Terms & Rules
           </h1>
-          <p style={{ fontSize: '18px', color: '#6B7280', margin: '0 0 32px 0', maxWidth: '600px', margin: '0 auto 32px' }}>
+          <p style={{ fontSize: '18px', color: '#6B7280', maxWidth: '600px', margin: '0 auto 32px' }}>
             Everything you need to know about how GrooveFund works. These terms are clear, fair, and designed to protect our community.
           </p>
         </section>
