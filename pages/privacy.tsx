@@ -110,7 +110,7 @@ export default function TransparencyReport() {
           <h1 style={{ fontSize: '48px', fontWeight: 800, color: '#1F2937', margin: '0 0 12px 0', lineHeight: 1.1 }}>
             🔒 Privacy Policy
           </h1>
-          <p style={{ fontSize: '18px', color: '#6B7280', margin: '0 0 32px 0', maxWidth: '600px', margin: '0 auto 32px' }}>
+          <p style={{ fontSize: '18px', color: '#6B7280', maxWidth: '600px', margin: '0 auto 32px' }}>
             We keep your data safe.
           </p>
         </section>
