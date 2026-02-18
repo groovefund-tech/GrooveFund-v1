@@ -587,7 +587,7 @@ export default function Home() {
        {/* HERO SECTION WITH BACKGROUND IMAGE */}
         <section
           style={{
-            background: 'linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url(/images/backgrounds/landing.jpg)',
+            background: 'linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url(/images/backgrounds/GrooveFund_Hero2.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundAttachment: isMobile ? 'scroll' : 'fixed',
