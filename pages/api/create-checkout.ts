@@ -38,7 +38,7 @@ export default async function handler(
           user_id, //REQUIRED
           source: 'groovefund_topup', // OPTIONAL
         },
-      reference: `groovefund_${user_id}_${Date.now()}`, // Add this line 
+      reference: `GROOVE-${user_id}`, // Add this line 
       }),
     })
 
