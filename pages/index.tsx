@@ -1755,6 +1755,7 @@ export default function Home() {
             >
               © 2026 GrooveFund. All rights reserved. | Save together.
               Celebrate together.
+              GrooveFund is an independent stokvel savings collective. We pool funds to purchase concert tickets from official vendors. We are not affiliated with any specific event organizer or ticketing platform. Ticket availability depends on public sales and is not guaranteed.
             </p>
           </div>
         </footer>
