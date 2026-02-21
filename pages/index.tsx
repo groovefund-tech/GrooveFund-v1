@@ -637,8 +637,7 @@ export default function Home() {
               }}
             >
               Save R500/month. Attend the best concerts in South Africa.
-              Together! GrooveFund is an independent stokvel savings collective. We pool funds to purchase concert tickets from official vendors. We are not affiliated with any specific event organizer or ticketing platform. Ticket availability depends on public sales and is not guaranteed.
-            </p>
+              Together! 
 
             <button
               onClick={handleGetStarted}
@@ -888,7 +887,8 @@ export default function Home() {
                     step: '04',
                     icon: '🎵',
                     title: 'Groove Together',
-                    desc: 'Connect with hundreds of Groovers at unforgettable events. Build a community that celebrates together.',
+                    desc: 'Connect with hundreds of Groovers at unforgettable events. Build a community that celebrates together. GrooveFund is an independent stokvel savings collective. We pool funds to purchase concert tickets from official vendors. We are not affiliated with any specific event organizer or ticketing platform. Ticket availability depends on public sales and is not guaranteed.
+            </p>',
                   },
                 ].map((item, i) => (
                   <div
