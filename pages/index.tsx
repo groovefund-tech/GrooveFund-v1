@@ -795,7 +795,6 @@ export default function Home() {
                       '/images/cape town int jazz festival.png',
                       '/images/black coffee weekender.jpg',
                       '/images/castle lite unlocks.jpg',
-                      '/images/homecoming events.jpg',
                       '/images/luxury marble circus.jpg',
                       '/images/download (11).jpeg',
                       '/images/hey-neighbour.jpg',
