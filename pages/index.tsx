@@ -105,7 +105,7 @@ export default function Home() {
   }, []);
 
   const handleGetStarted = () => {
-    router.push('/signup');
+    router.push('/sign-up-phone');
   };
 
   // Responsive style values
@@ -298,7 +298,7 @@ export default function Home() {
                 '@type': 'ListItem',
                 position: 2,
                 name: 'Get Started',
-                item: 'https://groovefund.co.za/signup',
+                item: 'https://groovefund.co.za/sign-up-phone',
               },
               {
                 '@type': 'ListItem',
@@ -637,7 +637,8 @@ export default function Home() {
               }}
             >
               Save R500/month. Attend the best concerts in South Africa.
-              Together! 
+              Together!
+            </p>
 
             <button
               onClick={handleGetStarted}
@@ -887,8 +888,7 @@ export default function Home() {
                     step: '04',
                     icon: '🎵',
                     title: 'Groove Together',
-                    desc: 'Connect with hundreds of Groovers at unforgettable events. Build a community that celebrates together. GrooveFund is an independent stokvel savings collective. We pool funds to purchase concert tickets from official vendors. We are not affiliated with any specific event organizer or ticketing platform. Ticket availability depends on public sales and is not guaranteed.
-            </p>',
+                    desc: 'Connect with hundreds of Groovers at unforgettable events. Build a community that celebrates together.',
                   },
                 ].map((item, i) => (
                   <div
@@ -1471,7 +1471,7 @@ export default function Home() {
                 }}
               >
                 Save R500/month. Attend the best concerts in South Africa.
-                Together!
+                Together! GrooveFund is an independent savings collective. We pool funds to purchase concert tickets from official vendors. We are not affiliated with any specific event organizer or ticketing platform. Ticket availability depends on public sales and is not guaranteed.
               </p>
             </div>
 
@@ -1754,8 +1754,7 @@ export default function Home() {
               }}
             >
               © 2026 GrooveFund. All rights reserved. | Save together.
-              Celebrate together! GrooveFund is an independent stokvel savings collective. We pool funds to purchase concert tickets from official vendors. We are not affiliated with any specific event organizer or ticketing platform. Ticket availability depends on public sales and is not guaranteed.
-          
+              Celebrate together.
             </p>
           </div>
         </footer>
